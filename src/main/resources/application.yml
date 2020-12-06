@@ -1,0 +1,18 @@
+spring:
+  main:
+    banner-mode: off
+  profiles:
+    active:
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+    url: jdbc:postgresql://localhost:5432/shop?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    platform:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
+
+
