@@ -1,6 +1,7 @@
 package com.spanfish.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +19,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 @Entity
-@Table(name = "m_contacts")
-public class Contacts {
+@Table(name = "m_customers_contacts")
+public class Contacts implements Serializable {
+
+  private static final long serialVersionUID = -1550444710845029616L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

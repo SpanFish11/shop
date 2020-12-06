@@ -1,30 +1,34 @@
 package com.spanfish.shop.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = "products")
 @Entity
-@Table(name = "m_products")
-public class Product implements Serializable {
+@Table(name = "m_manufacturers")
+public class Manufacturer implements Serializable {
 
-  private static final long serialVersionUID = 8394617297187417452L;
+  private static final long serialVersionUID = 4920050002360993182L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,18 +37,15 @@ public class Product implements Serializable {
   @Column(name = "name")
   private String name;
 
-  @Column(name = "price")
-  private BigDecimal price;
-
   @Column(name = "description")
   private String description;
 
-  @Column(name = "picture_url")
-  private String pictureUrl;
-
   // TODO make correct routing
-  @ManyToOne
-  @JoinColumn(name = "manufacturer_id")
-  @JsonManagedReference
-  private Manufacturer manufacturer;
+  @OneToMany(
+      mappedBy = "manufacturer",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
+  @JsonBackReference
+  Set<Product> products = new HashSet<>();
 }
