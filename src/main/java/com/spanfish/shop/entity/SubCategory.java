@@ -10,13 +10,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Setter
-@Getter
-@RequiredArgsConstructor
+@Data
+@EqualsAndHashCode(exclude = "category")
 @Entity
 @Table(name = "m_subcategories")
 public class SubCategory implements Serializable {

@@ -1,7 +1,6 @@
 package com.spanfish.shop.rest;
 
 import com.spanfish.shop.entity.Category;
-import com.spanfish.shop.entity.Customer;
 import com.spanfish.shop.service.CategoryService;
 import java.util.List;
 import java.util.Optional;
@@ -40,13 +39,13 @@ public class CategoryRestController {
 
     Optional<Category> categoryOptional = categoryService.getById(categoryId);
     return categoryOptional
-            .map(category -> new ResponseEntity<>(category, HttpStatus.OK))
-            .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        .map(category -> new ResponseEntity<>(category, HttpStatus.OK))
+        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   //  @Secured(Roles.Code.ADMIN) ROLE_ADMIN
   @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Category> save(@RequestBody Category requestCategory) {
+  public ResponseEntity<Category> addNew(@RequestBody Category requestCategory) {
 
     if (requestCategory == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

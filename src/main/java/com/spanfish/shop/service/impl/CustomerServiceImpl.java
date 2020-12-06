@@ -3,12 +3,12 @@ package com.spanfish.shop.service.impl;
 import com.spanfish.shop.entity.Customer;
 import com.spanfish.shop.repository.CustomerRepository;
 import com.spanfish.shop.service.CustomerService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +28,10 @@ public class CustomerServiceImpl implements CustomerService {
 
   @Override
   public Customer save(Customer customer) {
+    customer.setPassword(new BCryptPasswordEncoder().encode(customer.getPassword()));
     return customerRepository.save(customer);
   }
 
-  // TODO доделать метод
   @Override
   public Customer update(Customer requestCustomer) {
     return customerRepository.save(requestCustomer);

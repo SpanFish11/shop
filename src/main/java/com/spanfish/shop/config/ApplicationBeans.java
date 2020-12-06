@@ -1,6 +1,8 @@
 package com.spanfish.shop.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -9,10 +11,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 
 public class ApplicationBeans {
 
-  //  @Bean
-  //  public PasswordEncoder passwordEncoder() {
-  //    return new BCryptPasswordEncoder();
-  //  }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
   @Bean
   public Docket api() {

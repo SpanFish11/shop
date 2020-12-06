@@ -1,11 +1,8 @@
 package com.spanfish.shop.service.impl;
 
 import com.spanfish.shop.entity.Category;
-import com.spanfish.shop.entity.SubCategory;
 import com.spanfish.shop.repository.CategoryRepository;
 import com.spanfish.shop.service.CategoryService;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +29,6 @@ public class CategoryServiceImpl implements CategoryService {
     return categoryRepository.save(category);
   }
 
-  // TODO доделать метод
   @Override
   public Category update(Category category) {
     return categoryRepository.save(category);

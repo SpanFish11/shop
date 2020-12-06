@@ -46,7 +46,7 @@ public class CustomerRestController {
   }
 
   @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Customer> save(@RequestBody Customer requestCustomer) {
+  public ResponseEntity<Customer> create(@RequestBody Customer requestCustomer) {
 
     if (requestCustomer == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
