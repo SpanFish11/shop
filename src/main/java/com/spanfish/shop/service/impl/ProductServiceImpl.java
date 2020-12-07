@@ -5,6 +5,7 @@ import com.spanfish.shop.repository.ProductRepository;
 import com.spanfish.shop.service.ProductService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,13 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  public Page<Product> findAllManufacturersProducts(Long manufacturerId, Pageable pageable) {
+    return productRepository.findProductsByManufacturer_Id(manufacturerId, pageable);
+  }
+
+  @Override
   public Product create(Product product) {
+    product.setCode(generateRandomCode());
     return productRepository.save(product);
   }
 
@@ -38,5 +45,9 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public void delete(Long productId) {
     productRepository.deleteById(productId);
+  }
+
+  private String generateRandomCode() {
+    return RandomStringUtils.randomNumeric(10);
   }
 }

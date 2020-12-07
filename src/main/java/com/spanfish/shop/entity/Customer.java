@@ -30,13 +30,13 @@ public class Customer implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "name")
+  @Column(name = "name", nullable = false)
   private String name;
 
-  @Column(name = "email")
+  @Column(name = "email", nullable = false)
   private String email;
 
-  @Column(name = "password")
+  @Column(name = "password", nullable = false)
   private String password;
 
   @OneToOne(
@@ -45,6 +45,13 @@ public class Customer implements Serializable {
       fetch = FetchType.LAZY,
       orphanRemoval = true)
   @JsonManagedReference
-  private Contacts contacts;
+  private Contacts contacts = new Contacts();
 
+  //  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  //  @JoinTable(
+  //      name = "m_customers_roles",
+  //      joinColumns = @JoinColumn(name = "customer_id"),
+  //      inverseJoinColumns = @JoinColumn(name = "role_id"))
+  //  @JsonManagedReference
+  //  Set<Role> roles = new HashSet<>();
 }

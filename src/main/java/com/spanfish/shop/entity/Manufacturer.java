@@ -1,6 +1,8 @@
 package com.spanfish.shop.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.swagger.annotations.Api;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +28,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(exclude = "products")
 @Entity
 @Table(name = "m_manufacturers")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Manufacturer implements Serializable {
 
   private static final long serialVersionUID = 4920050002360993182L;
@@ -34,10 +37,10 @@ public class Manufacturer implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "name")
+  @Column(name = "name", nullable = false)
   private String name;
 
-  @Column(name = "description")
+  @Column(name = "description", nullable = false)
   private String description;
 
   // TODO make correct routing
@@ -46,6 +49,6 @@ public class Manufacturer implements Serializable {
       cascade = CascadeType.ALL,
       fetch = FetchType.LAZY,
       orphanRemoval = true)
-  @JsonBackReference
+  //  @JsonIgnore
   Set<Product> products = new HashSet<>();
 }

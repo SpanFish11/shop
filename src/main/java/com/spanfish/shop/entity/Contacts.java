@@ -1,6 +1,7 @@
 package com.spanfish.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.sun.istack.NotNull;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,11 +30,15 @@ public class Contacts implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @NotNull
   @Column(name = "phone")
   private String phone;
 
   @Column(name = "postal_code")
   private Integer postalCode;
+
+  @Column(name = "city")
+  private String city;
 
   @Column(name = "address")
   private String address;

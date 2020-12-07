@@ -1,6 +1,6 @@
 package com.spanfish.shop.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "m_products")
+// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product implements Serializable {
 
   private static final long serialVersionUID = 8394617297187417452L;
@@ -30,21 +31,32 @@ public class Product implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "name")
+  @Column(name = "name", nullable = false)
   private String name;
 
-  @Column(name = "price")
+  @Column(name = "price", nullable = false)
   private BigDecimal price;
 
-  @Column(name = "description")
+  @Column(name = "description", nullable = false)
   private String description;
 
-  @Column(name = "picture_url")
+  @Column(name = "picture_url", nullable = false)
   private String pictureUrl;
+
+  @Column(name = "code", nullable = false)
+  private String code;
 
   // TODO make correct routing
   @ManyToOne
   @JoinColumn(name = "manufacturer_id")
-  @JsonManagedReference
+  //  @JsonManagedReference
+  @JsonIgnore
   private Manufacturer manufacturer;
+
+  // TODO make correct routing
+//  @ManyToOne
+//  @JoinColumn(name = "category_id")
+//  //  @JsonManagedReference
+//  @JsonIgnore
+//  private Category category;
 }

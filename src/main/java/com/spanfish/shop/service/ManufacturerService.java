@@ -9,4 +9,10 @@ public interface ManufacturerService {
   List<Manufacturer> findAll();
 
   Optional<Manufacturer> findById(Long manufacturerId);
+
+  Manufacturer save(Manufacturer manufacturer);
+
+  Manufacturer update(Manufacturer manufacturer);
+
+  void delete(Long manufacturerId);
 }

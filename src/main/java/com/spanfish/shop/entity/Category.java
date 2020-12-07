@@ -32,7 +32,7 @@ public class Category implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "title")
+  @Column(name = "title", nullable = false)
   private String title;
 
   @OneToMany(
@@ -42,4 +42,13 @@ public class Category implements Serializable {
       orphanRemoval = true)
   @JsonManagedReference
   Set<SubCategory> subCategories = new HashSet<>();
+
+  // TODO make correct routing
+//  @OneToMany(
+//      mappedBy = "category",
+//      cascade = CascadeType.ALL,
+//      fetch = FetchType.LAZY,
+//      orphanRemoval = true)
+//  //  @JsonIgnore
+//  Set<Product> products = new HashSet<>();
 }

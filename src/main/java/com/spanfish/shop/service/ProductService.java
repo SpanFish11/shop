@@ -11,6 +11,8 @@ public interface ProductService {
 
   Page<Product> findAll(Pageable pageable);
 
+  Page<Product> findAllManufacturersProducts(Long manufacturerId, Pageable pageable);
+
   Product create(Product product);
 
   Product update(Product product);
