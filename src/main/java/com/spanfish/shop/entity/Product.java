@@ -1,6 +1,5 @@
 package com.spanfish.shop.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
@@ -22,7 +21,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "m_products")
-// @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Product implements Serializable {
 
   private static final long serialVersionUID = 8394617297187417452L;
@@ -46,17 +44,17 @@ public class Product implements Serializable {
   @Column(name = "code", nullable = false)
   private String code;
 
-  // TODO make correct routing
   @ManyToOne
   @JoinColumn(name = "manufacturer_id")
-  //  @JsonManagedReference
-  @JsonIgnore
   private Manufacturer manufacturer;
 
+  // TODO доделать связи с категорией и подкатегорией
   // TODO make correct routing
+  @ManyToOne
+  @JoinColumn(name = "category_id")
+  private Category category;
+//
 //  @ManyToOne
-//  @JoinColumn(name = "category_id")
-//  //  @JsonManagedReference
-//  @JsonIgnore
-//  private Category category;
+//  @JoinColumn(name = "subcategory_id")
+//  private SubCategory subCategory;
 }

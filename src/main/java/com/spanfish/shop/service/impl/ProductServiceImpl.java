@@ -32,6 +32,11 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  public Page<Product> findAllCategoryProducts(Long categoryId, Pageable pageable) {
+    return productRepository.findProductsByCategory_Id(categoryId, pageable);
+  }
+
+  @Override
   public Product create(Product product) {
     product.setCode(generateRandomCode());
     return productRepository.save(product);
@@ -48,6 +53,6 @@ public class ProductServiceImpl implements ProductService {
   }
 
   private String generateRandomCode() {
-    return RandomStringUtils.randomNumeric(10);
+    return RandomStringUtils.randomNumeric(7);
   }
 }

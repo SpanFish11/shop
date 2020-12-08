@@ -1,5 +1,6 @@
 package com.spanfish.shop.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -43,12 +44,11 @@ public class Category implements Serializable {
   @JsonManagedReference
   Set<SubCategory> subCategories = new HashSet<>();
 
-  // TODO make correct routing
-//  @OneToMany(
-//      mappedBy = "category",
-//      cascade = CascadeType.ALL,
-//      fetch = FetchType.LAZY,
-//      orphanRemoval = true)
-//  //  @JsonIgnore
-//  Set<Product> products = new HashSet<>();
+  @OneToMany(
+      mappedBy = "category",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true) // orphanRemoval = true ?????
+  @JsonIgnore
+  Set<Product> products = new HashSet<>();
 }
