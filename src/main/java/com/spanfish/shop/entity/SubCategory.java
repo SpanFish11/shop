@@ -16,11 +16,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(exclude = "category")
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = {"category", "products"})
 @Entity
 @Table(name = "m_subcategories")
 public class SubCategory implements Serializable {
@@ -39,11 +43,11 @@ public class SubCategory implements Serializable {
   @JsonBackReference
   private Category category;
 
-//  @OneToMany(
-//      mappedBy = "subcategory",
-//      cascade = CascadeType.ALL,
-//      fetch = FetchType.LAZY,
-//      orphanRemoval = true) // orphanRemoval = true ?????
-//  @JsonIgnore
-//  Set<Product> products = new HashSet<>();
+  @OneToMany(
+      mappedBy = "subCategory",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true) // orphanRemoval = true ?????
+  @JsonIgnore
+  Set<Product> products = new HashSet<>();
 }

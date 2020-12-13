@@ -37,6 +37,11 @@ public class ProductServiceImpl implements ProductService {
   }
 
   @Override
+  public Page<Product> findAllSubCategoryProducts(Long subCategoryId, Pageable pageable) {
+    return productRepository.findProductsBySubCategory_Id(subCategoryId, pageable);
+  }
+
+  @Override
   public Product create(Product product) {
     product.setCode(generateRandomCode());
     return productRepository.save(product);

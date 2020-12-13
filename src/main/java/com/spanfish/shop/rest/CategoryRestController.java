@@ -49,12 +49,11 @@ public class CategoryRestController {
         .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  // TODO или по названию производителя
   @GetMapping(value = "/{id}/products", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<Page<Product>> getCategoryProducts(
       @PathVariable("id") Long categoryId, @PageableDefault Pageable pageable) {
 
-    Page<Product> products = productService.findAllManufacturersProducts(categoryId, pageable);
+    Page<Product> products = productService.findAllCategoryProducts(categoryId, pageable);
     if (products.getTotalElements() == 0) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

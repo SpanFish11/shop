@@ -1,8 +1,12 @@
 package com.spanfish.shop.service.impl;
 
 import com.spanfish.shop.entity.Customer;
+import com.spanfish.shop.entity.Role;
 import com.spanfish.shop.repository.CustomerRepository;
+import com.spanfish.shop.repository.RoleRepository;
 import com.spanfish.shop.service.CustomerService;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class CustomerServiceImpl implements CustomerService {
 
   private final CustomerRepository customerRepository;
+  private final RoleRepository roleRepository;
 
   @Override
   public Optional<Customer> getById(Long id) {
@@ -29,6 +34,8 @@ public class CustomerServiceImpl implements CustomerService {
   @Override
   public Customer save(Customer customer) {
     customer.setPassword(new BCryptPasswordEncoder().encode(customer.getPassword()));
+    Optional<Role> role = roleRepository.findRoleByRoleName("ROLE_USER");
+    role.ifPresent(value -> customer.setRoles(new HashSet<>(List.of(value))));
     return customerRepository.save(customer);
   }
 

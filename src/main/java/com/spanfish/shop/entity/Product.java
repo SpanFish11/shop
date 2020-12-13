@@ -48,13 +48,11 @@ public class Product implements Serializable {
   @JoinColumn(name = "manufacturer_id")
   private Manufacturer manufacturer;
 
-  // TODO доделать связи с категорией и подкатегорией
-  // TODO make correct routing
   @ManyToOne
   @JoinColumn(name = "category_id")
   private Category category;
-//
-//  @ManyToOne
-//  @JoinColumn(name = "subcategory_id")
-//  private SubCategory subCategory;
+
+  @ManyToOne
+  @JoinColumn(name = "subcategory_id")
+  private SubCategory subCategory;
 }

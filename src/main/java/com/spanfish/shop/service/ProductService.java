@@ -15,6 +15,8 @@ public interface ProductService {
 
   Page<Product> findAllCategoryProducts(Long categoryId, Pageable pageable);
 
+  Page<Product> findAllSubCategoryProducts(Long subCategoryId, Pageable pageable);
+
   Product create(Product product);
 
   Product update(Product product);

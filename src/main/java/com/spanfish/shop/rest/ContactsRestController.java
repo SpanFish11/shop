@@ -23,7 +23,6 @@ public class ContactsRestController {
 
   // TODO переделать на Principal principal и искать по email
   @GetMapping(value = "")
-  // @ResponseBody
   public ResponseEntity<Contacts> getOne(@PathVariable("customerId") Long customerId) {
     if (customerId == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

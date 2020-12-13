@@ -17,12 +17,14 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"subCategories", "products"})
 @Entity
 @Table(name = "m_categories")
 public class Category implements Serializable {
