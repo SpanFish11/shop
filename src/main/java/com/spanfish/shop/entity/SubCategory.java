@@ -35,8 +35,8 @@ public class SubCategory implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "title", nullable = false)
-  private String title;
+  @Column(name = "name", nullable = false)
+  private String name;
 
   @ManyToOne
   @JoinColumn(name = "category_id")

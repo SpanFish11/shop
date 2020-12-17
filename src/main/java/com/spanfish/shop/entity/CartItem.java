@@ -1,50 +1,42 @@
 package com.spanfish.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.sun.istack.NotNull;
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = "cart")
 @Entity
-@Table(name = "m_customers_contacts")
-public class Contacts implements Serializable {
-
-  private static final long serialVersionUID = -1550444710845029616L;
+@Table(name = "m_cart_items")
+public class CartItem {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotNull
-  @Column(name = "phone")
-  private String phone;
-
-  @Column(name = "zip")
-  private Integer zip;
-
-  @Column(name = "city")
-  private String city;
-
-  @Column(name = "address")
-  private String address;
-
-  @OneToOne
-  @JoinColumn(name = "customer_id")
+  @ManyToOne
+  @JoinColumn(name = "cart_id")
   @JsonBackReference
-  private Customer customer;
+  private Cart cart;
+
+  @ManyToOne
+  @JoinColumn(name = "product_id")
+  private Product product;
+
+  @Column(name = "amount")
+  private Integer amount;
 }

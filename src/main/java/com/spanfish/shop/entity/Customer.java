@@ -33,6 +33,7 @@ public class Customer implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
   private Long id;
 
   @Column(name = "name", nullable = false)
@@ -62,4 +63,12 @@ public class Customer implements Serializable {
         @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
       })
   private Set<Role> roles = new HashSet<>();
+
+  @OneToOne(
+      mappedBy = "customer",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
+  @JsonManagedReference
+  private Cart cart;
 }
