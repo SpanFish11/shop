@@ -20,21 +20,22 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"cart", "product"})
+@EqualsAndHashCode(exclude = {"order", "product"})
 @Entity
-@Table(name = "m_cart_items")
-public class CartItem implements Serializable {
+@Table(name = "m_ordered_products")
+public class OrderProduct implements Serializable {
 
-  private static final long serialVersionUID = 3317640467893102163L;
+  private static final long serialVersionUID = -168354789580359704L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "cart_id")
+  @JoinColumn(name = "order_id")
   @JsonBackReference
-  private Cart cart;
+  private Order order;
 
   @ManyToOne
   @JoinColumn(name = "product_id")

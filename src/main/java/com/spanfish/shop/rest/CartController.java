@@ -10,28 +10,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/cart")
+@RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
 public class CartController {
 
   private final CartService cartService;
   private final CartRepository cartRepository;
 
-  @GetMapping("/{id}")
-  public ResponseEntity<Cart> getCart(@PathVariable("id") Long cartId) {
+  @GetMapping
+  public ResponseEntity<Cart> getCart() {
 
-    if (cartId == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    Optional<Cart> cartOptional = cartRepository.findById(cartId);
+    Optional<Cart> cartOptional = cartService.getCart();
     return cartOptional
         .map(cart -> new ResponseEntity<>(cart, HttpStatus.OK))
         .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -63,5 +58,11 @@ public class CartController {
   public ResponseEntity<Cart> deleteCartItem(@RequestBody CartItemResponse cartItemResponse) {
     Cart cart = cartService.removeCartItem(cartItemResponse.getProductId());
     return new ResponseEntity<>(cart, HttpStatus.OK);
+  }
+
+  @DeleteMapping
+  public ResponseEntity<HttpStatus> deleteCartItems() {
+    cartService.clearCart();
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 }

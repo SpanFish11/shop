@@ -25,6 +25,20 @@ public class CartServiceImpl implements CartService {
   // TODO UserService
   private final CustomerService customerService;
 
+  @Override
+  public Optional<Cart> getCart() {
+
+    Customer customer = customerService.getById(1L).get();
+    Cart cart = customer.getCart();
+
+    if (Objects.isNull(cart)) {
+      cart = createCart(customer);
+      customer.setCart(cart);
+      cartRepository.save(cart);
+    }
+    return Optional.of(cart);
+  }
+
   // TODO UserService
   @Override
   public Cart addToCart(Long productId, Integer amount) {
@@ -32,9 +46,12 @@ public class CartServiceImpl implements CartService {
     Customer customer = customerService.getById(1L).get();
     Cart cart = customer.getCart();
 
-    if (Objects.nonNull(cart)
-        && Objects.nonNull(cart.getCartItemList())
-        && !cart.getCartItemList().isEmpty()) {
+    if (Objects.isNull(cart)) {
+      cart = createCart(customer);
+      customer.setCart(cart);
+    }
+
+    if (Objects.nonNull(cart.getCartItemList()) && !cart.getCartItemList().isEmpty()) {
       Optional<CartItem> cartItem =
           cart.getCartItemList().stream()
               .filter(ci -> ci.getProduct().getId().equals(productId))
@@ -51,10 +68,6 @@ public class CartServiceImpl implements CartService {
     Product product = productService.findById(productId).get();
 
     CartItem cartItem = CartItem.builder().cart(cart).amount(amount).product(product).build();
-
-    if (Objects.isNull(cart.getCartItemList())) {
-      cart.setCartItemList(new ArrayList<>());
-    }
 
     cart.getCartItemList().add(cartItem);
     cart = cartRepository.save(calculateTotalPrice(cart));
@@ -125,6 +138,16 @@ public class CartServiceImpl implements CartService {
     return cart;
   }
 
+  @Override
+  public void clearCart() {
+
+    Customer customer = customerService.getById(1L).get();
+    Cart cart = customer.getCart();
+    cart.getCartItemList().clear();
+    cart.setTotalPrice(null);
+    cartRepository.save(cart);
+  }
+
   private Cart calculateTotalPrice(Cart cart) {
     cart.setTotalPrice(BigDecimal.ZERO);
     cart.getCartItemList()
@@ -141,8 +164,6 @@ public class CartServiceImpl implements CartService {
   }
 
   private Cart createCart(Customer customer) {
-    Cart cart = new Cart();
-    cart.setCustomer(customer);
-    return cart;
+    return Cart.builder().customer(customer).cartItemList(new ArrayList<>()).build();
   }
 }
