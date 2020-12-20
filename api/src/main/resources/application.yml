@@ -1,0 +1,32 @@
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    hikari:
+      maximum-pool-size: 10
+    url: jdbc:postgresql://localhost:5432/shop?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    platform:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
+  flyway:
+    enabled: true
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
+    locations: classpath:/migrations
+    baseline-on-migrate: true
+    baseline-description: <<Flyway Scripts>>
+    ignore-missing-migrations: true
+
+---
+
+jwt:
+  token:
+    secret: SQ/+NvSW0UT6TA8P4qhM7u97fzo6HfxFHN5P3BqPEyuod33MS3IHw/F9ZFqu27pyaNvaMAUYz0eBE1unBP90Vg==
+    expiration: 864_000_000
+
+---
