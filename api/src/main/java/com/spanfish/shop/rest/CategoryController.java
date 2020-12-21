@@ -11,8 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,26 +30,26 @@ public class CategoryController {
   private final CategoryService categoryService;
   private final ProductService productService;
 
-  @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping
   public ResponseEntity<List<Category>> getAll() {
 
     List<Category> categories = categoryService.getAll();
     return new ResponseEntity<>(categories, HttpStatus.OK);
   }
 
-  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping("/{id}")
   public ResponseEntity<Category> getOne(@PathVariable("id") Long categoryId) {
+
     if (categoryId == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     Optional<Category> categoryOptional = categoryService.getById(categoryId);
     return categoryOptional
         .map(category -> new ResponseEntity<>(category, HttpStatus.OK))
         .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
-  @GetMapping(value = "/{id}/products", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping("/{id}/products")
   public ResponseEntity<Page<Product>> getCategoryProducts(
       @PathVariable("id") Long categoryId, @PageableDefault Pageable pageable) {
 
@@ -60,39 +60,36 @@ public class CategoryController {
     return new ResponseEntity<>(products, HttpStatus.OK);
   }
 
-  //  @Secured(Roles.Code.ADMIN) ROLE_ADMIN
-  @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Secured({"ROLE_ADMIN"})
+  @PostMapping()
   public ResponseEntity<Category> addNew(@RequestBody Category requestCategory) {
 
     if (requestCategory == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     Category category = categoryService.create(requestCategory);
     return new ResponseEntity<>(category, HttpStatus.CREATED);
   }
 
-  //  @Secured(Roles.Code.ADMIN) ROLE_ADMIN
-  @PutMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Secured({"ROLE_ADMIN"})
+  @PutMapping
   public ResponseEntity<Category> update(@RequestBody Category requestCategory) {
 
     if (requestCategory == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     Category category = categoryService.update(requestCategory);
     return new ResponseEntity<>(category, HttpStatus.OK);
   }
 
-  //  @Secured(Roles.Code.ADMIN) ROLE_ADMIN
-  @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @Secured({"ROLE_ADMIN"})
+  @DeleteMapping("{id}")
   public ResponseEntity<Category> delete(@PathVariable Long id) {
-    Optional<Category> category = categoryService.getById(id);
 
+    Optional<Category> category = categoryService.getById(id);
     if (category.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
     categoryService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

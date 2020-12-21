@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ public class CustomerController {
 
   private final CustomerService customerService;
 
+  @Secured({"ROLE_ADMIN"})
   @GetMapping
   public ResponseEntity<Page<Customer>> getAll(@PageableDefault Pageable pageable) {
 
@@ -32,12 +34,12 @@ public class CustomerController {
     return new ResponseEntity<>(customers, HttpStatus.OK);
   }
 
-  @GetMapping(value = "/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<Customer> get(@PathVariable("id") Long customerId) {
+
     if (customerId == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     Optional<Customer> customerOptional = customerService.getById(customerId);
     return customerOptional
         .map(customer -> new ResponseEntity<>(customer, HttpStatus.OK))
@@ -50,7 +52,6 @@ public class CustomerController {
     if (requestCustomer == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     Customer customer = customerService.save(requestCustomer);
     return new ResponseEntity<>(customer, HttpStatus.CREATED);
   }
@@ -61,20 +62,18 @@ public class CustomerController {
     if (requestCustomer == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     Customer customer = customerService.save(requestCustomer);
     return new ResponseEntity<>(customer, HttpStatus.OK);
   }
 
-  //  @Secured(Roles.Code.ADMIN) ROLE_ADMIN
+  @Secured({"ROLE_ADMIN"})
   @DeleteMapping(value = "{id}")
   public ResponseEntity<Customer> delete(@PathVariable Long id) {
-    Optional<Customer> customer = customerService.getById(id);
 
+    Optional<Customer> customer = customerService.getById(id);
     if (customer.isEmpty()) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
     customerService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
