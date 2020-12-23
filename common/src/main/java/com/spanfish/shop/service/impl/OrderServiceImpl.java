@@ -21,13 +21,12 @@ public class OrderServiceImpl implements OrderService {
 
   private final OrderRepository orderRepository;
   private final CartService cartService;
-  // TODO UserService
   private final CustomerService customerService;
 
   @Override
   public Page<Order> findAllCustomerOrders(Pageable pageable) {
-    // TODO UserService
-    Customer customer = customerService.getById(1L).get();
+
+    Customer customer = customerService.getCustomer();
     return orderRepository.findAllByCustomerOrderByDateDesc(customer, pageable);
   }
 
@@ -38,8 +37,8 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public Order saveOrder() {
-    // TODO UserService
-    Customer customer = customerService.getById(1L).get();
+
+    Customer customer = customerService.getCustomer();
     Cart cart = customer.getCart();
 
     Order saveOrder =

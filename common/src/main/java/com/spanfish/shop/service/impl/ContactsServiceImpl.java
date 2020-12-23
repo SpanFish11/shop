@@ -13,18 +13,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ContactsServiceImpl implements ContactsService {
 
-	private final ContactsRepository contactsRepository;
-	private final CustomerService customerService;
+  private final ContactsRepository contactsRepository;
+  private final CustomerService customerService;
 
-	@Override
-	public Optional<Contacts> findContactByCustomerId(Long customerId) {
-		return contactsRepository.findContactsByCustomer_Id(customerId);
-	}
+  @Override
+  public Optional<Contacts> findContactByCustomerId(Long customerId) {
+    return contactsRepository.findContactsByCustomer_Id(customerId);
+  }
 
-	@Override
-	public Contacts update(Long customerId, Contacts contacts) {
-		Optional<Customer> customer = customerService.getById(customerId);
-		customer.ifPresent(contacts::setCustomer);
-		return contactsRepository.save(contacts);
-	}
+  @Override
+  public Contacts update(Long customerId, Contacts contacts) {
+
+    Customer customer = customerService.getById(customerId);
+    customer.getContacts().setCustomer(customer);
+    return contactsRepository.save(contacts);
+  }
 }
