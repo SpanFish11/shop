@@ -22,6 +22,8 @@ public interface CustomerService {
 
   Customer update(UpdateCustomerRequest updateCustomerRequest);
 
+  Customer update(Customer customer);
+
   Customer updateAddress(UpdateCustomerAddressRequest updateCustomerAddressRequest);
 
   void delete(Long id);

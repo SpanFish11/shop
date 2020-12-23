@@ -2,6 +2,7 @@ package com.spanfish.shop.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -16,13 +17,14 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static javax.persistence.TemporalType.TIMESTAMP;
+
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -44,6 +46,16 @@ public class Customer implements Serializable {
 
   @Column(name = "password", nullable = false)
   private String password;
+
+  @Column(name = "registration_date")
+  @Temporal(TIMESTAMP)
+  private Date registrationDate;
+
+  @Column(name = "email_verified")
+  private Boolean emailVerified = false;
+
+  @Column(name = "is_active")
+  private Boolean isActive = true;
 
   @OneToOne(
       mappedBy = "customer",
