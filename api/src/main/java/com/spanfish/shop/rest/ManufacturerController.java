@@ -2,14 +2,16 @@ package com.spanfish.shop.rest;
 
 import com.spanfish.shop.entity.Manufacturer;
 import com.spanfish.shop.entity.Product;
+import com.spanfish.shop.entity.request.manufacturer.CreateManufacturerRequest;
+import com.spanfish.shop.entity.request.manufacturer.UpdateManufacturerRequest;
+import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.service.ManufacturerService;
 import com.spanfish.shop.service.ProductService;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -42,58 +44,56 @@ public class ManufacturerController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Manufacturer> get(@PathVariable("id") Long manufacturerId) {
+  public ResponseEntity<Manufacturer> get(@PathVariable("id") Long id) {
 
-    if (manufacturerId == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid manufacturer id");
     }
-    Optional<Manufacturer> manufacturerOptional = manufacturerService.findById(manufacturerId);
-    return manufacturerOptional
-        .map(manufacturer -> new ResponseEntity<>(manufacturer, HttpStatus.OK))
-        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
-  }
-
-  // TODO или по названию производителя
-  @GetMapping("/{id}/products")
-  public ResponseEntity<Page<Product>> getManufacturersProducts(
-      @PathVariable("id") Long manufacturerId, @PageableDefault Pageable pageable) {
-
-    Page<Product> products = productService.findAllManufacturersProducts(manufacturerId, pageable);
-    if (products.getTotalElements() == 0) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-    return new ResponseEntity<>(products, HttpStatus.OK);
-  }
-
-  @Secured({"ROLE_ADMIN"})
-  @PostMapping
-  public ResponseEntity<Manufacturer> addNew(@RequestBody Manufacturer requestManufacturer) {
-
-    if (requestManufacturer == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-    Manufacturer manufacturer = manufacturerService.save(requestManufacturer);
-    return new ResponseEntity<>(manufacturer, HttpStatus.CREATED);
-  }
-
-  @Secured({"ROLE_ADMIN"})
-  @PutMapping
-  public ResponseEntity<Manufacturer> update(@RequestBody Manufacturer requestManufacturer) {
-
-    if (requestManufacturer == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-    Manufacturer manufacturer = manufacturerService.update(requestManufacturer);
+    Manufacturer manufacturer = manufacturerService.findById(id);
     return new ResponseEntity<>(manufacturer, HttpStatus.OK);
   }
 
-  @Secured({"ROLE_ADMIN"})
-  @DeleteMapping("{id}")
-  public ResponseEntity<Manufacturer> delete(@PathVariable Long id) {
+  @GetMapping("/{id}/products")
+  public ResponseEntity<Page<Product>> getManufacturersProducts(
+      @PathVariable("id") Long id, Pageable pageable) {
 
-    Optional<Manufacturer> manufacturerOptional = manufacturerService.findById(id);
-    if (manufacturerOptional.isEmpty()) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid manufacturer id");
+    }
+    Page<Product> products = productService.findAllManufacturersProducts(id, pageable);
+    return new ResponseEntity<>(products, HttpStatus.OK);
+  }
+
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
+  @PostMapping
+  public ResponseEntity<Manufacturer> addNew(
+      @RequestBody CreateManufacturerRequest createManufacturerRequest) {
+
+    if (Objects.isNull(createManufacturerRequest)) {
+      throw new InvalidArgumentException("Wrong data");
+    }
+    Manufacturer manufacturer = manufacturerService.save(createManufacturerRequest);
+    return new ResponseEntity<>(manufacturer, HttpStatus.CREATED);
+  }
+
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
+  @PutMapping
+  public ResponseEntity<Manufacturer> update(
+      @RequestBody UpdateManufacturerRequest updateManufacturerRequest) {
+
+    if (Objects.isNull(updateManufacturerRequest)) {
+      throw new InvalidArgumentException("Wrong data");
+    }
+    Manufacturer manufacturer = manufacturerService.update(updateManufacturerRequest);
+    return new ResponseEntity<>(manufacturer, HttpStatus.OK);
+  }
+
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
+  @DeleteMapping("{id}")
+  public ResponseEntity<Manufacturer> delete(@PathVariable("id") Long id) {
+
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid manufacturer id");
     }
     manufacturerService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

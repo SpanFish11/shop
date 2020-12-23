@@ -2,14 +2,16 @@ package com.spanfish.shop.rest;
 
 import com.spanfish.shop.entity.Product;
 import com.spanfish.shop.entity.SubCategory;
+import com.spanfish.shop.entity.request.subcategory.CreateSubCategoryRequest;
+import com.spanfish.shop.entity.request.subcategory.UpdateSubCategoryRequest;
+import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.service.ProductService;
 import com.spanfish.shop.service.SubcategoryService;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -21,8 +23,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static java.util.Objects.isNull;
 
 @RestController
 @RequestMapping("/api/v1/subcategories")
@@ -40,59 +40,58 @@ public class SubCategoryController {
   }
 
   @GetMapping("{id}")
-  public ResponseEntity<SubCategory> getOne(@PathVariable("id") Long subCategoryId) {
+  public ResponseEntity<SubCategory> getOne(@PathVariable("id") Long id) {
 
-    if (isNull(subCategoryId)) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid subcategory id");
     }
-    Optional<SubCategory> optionalSubCategory = subcategoryService.getById(subCategoryId);
-    return optionalSubCategory
-        .map(subCategory -> new ResponseEntity<>(subCategory, HttpStatus.OK))
-        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    SubCategory subCategory = subcategoryService.getById(id);
+    return new ResponseEntity<>(subCategory, HttpStatus.OK);
   }
 
   @GetMapping("/{id}/products")
   public ResponseEntity<Page<Product>> getSubcategoryProducts(
-      @PathVariable("id") Long subCategoryId, @PageableDefault Pageable pageable) {
+      @PathVariable("id") Long id, Pageable pageable) {
 
-    Page<Product> products = productService.findAllSubCategoryProducts(subCategoryId, pageable);
-    if (products.getTotalElements() == 0) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid subcategory id");
     }
+    Page<Product> products = productService.findAllSubCategoryProducts(id, pageable);
     return new ResponseEntity<>(products, HttpStatus.OK);
   }
 
-  @Secured({"ROLE_ADMIN"})
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @PostMapping
-  public ResponseEntity<SubCategory> create(@RequestBody SubCategory requestSubCategory) {
+  public ResponseEntity<SubCategory> create(
+      @RequestBody CreateSubCategoryRequest createSubCategoryRequest) {
 
-    if (isNull(requestSubCategory)) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(createSubCategoryRequest)) {
+      throw new InvalidArgumentException("Wrong data");
     }
-    SubCategory subCategory = subcategoryService.create(requestSubCategory);
+    SubCategory subCategory = subcategoryService.create(createSubCategoryRequest);
     return new ResponseEntity<>(subCategory, HttpStatus.OK);
   }
 
-  @Secured({"ROLE_ADMIN"})
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @PutMapping
-  public ResponseEntity<SubCategory> update(@RequestBody SubCategory requestSubCategory) {
+  public ResponseEntity<SubCategory> update(
+      @RequestBody UpdateSubCategoryRequest updateSubCategoryRequest) {
 
-    if (isNull(requestSubCategory)) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(updateSubCategoryRequest)) {
+      throw new InvalidArgumentException("Wrong data");
     }
-    SubCategory subCategory = subcategoryService.update(requestSubCategory);
+    SubCategory subCategory = subcategoryService.update(updateSubCategoryRequest);
     return new ResponseEntity<>(subCategory, HttpStatus.OK);
   }
 
-  @Secured({"ROLE_ADMIN"})
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @DeleteMapping("{id}")
-  public ResponseEntity<SubCategory> delete(@PathVariable("id") Long subCategoryId) {
+  public ResponseEntity<SubCategory> delete(@PathVariable("id") Long id) {
 
-    Optional<SubCategory> optionalSubCategory = subcategoryService.getById(subCategoryId);
-    if (optionalSubCategory.isEmpty()) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid subcategory id");
     }
-    subcategoryService.delete(subCategoryId);
+    subcategoryService.delete(id);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

@@ -1,18 +1,19 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.entity.Manufacturer;
+import com.spanfish.shop.entity.request.manufacturer.CreateManufacturerRequest;
+import com.spanfish.shop.entity.request.manufacturer.UpdateManufacturerRequest;
 import java.util.List;
-import java.util.Optional;
 
 public interface ManufacturerService {
 
   List<Manufacturer> findAll();
 
-  Optional<Manufacturer> findById(Long manufacturerId);
+  Manufacturer findById(Long id);
 
-  Manufacturer save(Manufacturer manufacturer);
+  Manufacturer save(CreateManufacturerRequest createManufacturerRequest);
 
-  Manufacturer update(Manufacturer manufacturer);
+  Manufacturer update(UpdateManufacturerRequest updateManufacturerRequest);
 
   void delete(Long manufacturerId);
 }

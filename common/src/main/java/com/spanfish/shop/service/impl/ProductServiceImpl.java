@@ -1,6 +1,7 @@
 package com.spanfish.shop.service.impl;
 
 import com.spanfish.shop.entity.Product;
+import com.spanfish.shop.exception.ResourceNotFoundException;
 import com.spanfish.shop.repository.ProductRepository;
 import com.spanfish.shop.service.ProductService;
 import java.util.Optional;
@@ -28,17 +29,37 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Page<Product> findAllManufacturersProducts(Long manufacturerId, Pageable pageable) {
-    return productRepository.findProductsByManufacturer_Id(manufacturerId, pageable);
+
+    Page<Product> products =
+        productRepository.findProductsByManufacturer_Id(manufacturerId, pageable);
+    if (products.getTotalElements() == 0) {
+      throw new ResourceNotFoundException(
+          String.format("Could not find products for manufacturer ID %d", manufacturerId));
+    }
+    return products;
   }
 
   @Override
   public Page<Product> findAllCategoryProducts(Long categoryId, Pageable pageable) {
-    return productRepository.findProductsByCategory_Id(categoryId, pageable);
+
+    Page<Product> products = productRepository.findProductsByCategory_Id(categoryId, pageable);
+    if (products.getTotalElements() == 0) {
+      throw new ResourceNotFoundException(
+          String.format("Could not find products for category ID %d", categoryId));
+    }
+    return products;
   }
 
   @Override
   public Page<Product> findAllSubCategoryProducts(Long subCategoryId, Pageable pageable) {
-    return productRepository.findProductsBySubCategory_Id(subCategoryId, pageable);
+
+    Page<Product> products =
+        productRepository.findProductsBySubCategory_Id(subCategoryId, pageable);
+    if (products.getTotalElements() == 0) {
+      throw new ResourceNotFoundException(
+          String.format("Could not find products for subcategory ID %d", subCategoryId));
+    }
+    return products;
   }
 
   @Override

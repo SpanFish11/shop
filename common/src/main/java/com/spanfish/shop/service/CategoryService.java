@@ -1,18 +1,19 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.entity.Category;
+import com.spanfish.shop.entity.request.category.CreateCategoryRequest;
+import com.spanfish.shop.entity.request.category.UpdateCategoryRequest;
 import java.util.List;
-import java.util.Optional;
 
 public interface CategoryService {
 
-	Optional<Category> getById(Long id);
+  Category getById(Long categoryId);
 
-	List<Category> getAll();
+  List<Category> getAll();
 
-	Category create(Category category);
+  Category create(CreateCategoryRequest createCategoryRequest);
 
-	Category update(Category category);
+  Category update(UpdateCategoryRequest updateCategoryRequest);
 
-	void delete(Long id);
+  void delete(Long categoryId);
 }

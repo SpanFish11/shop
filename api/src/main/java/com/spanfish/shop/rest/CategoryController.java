@@ -2,14 +2,17 @@ package com.spanfish.shop.rest;
 
 import com.spanfish.shop.entity.Category;
 import com.spanfish.shop.entity.Product;
+import com.spanfish.shop.entity.request.category.CreateCategoryRequest;
+import com.spanfish.shop.entity.request.category.UpdateCategoryRequest;
+import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.service.CategoryService;
 import com.spanfish.shop.service.ProductService;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -38,57 +41,55 @@ public class CategoryController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Category> getOne(@PathVariable("id") Long categoryId) {
+  public ResponseEntity<Category> getOne(@PathVariable("id") Long id) {
 
-    if (categoryId == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid category id");
     }
-    Optional<Category> categoryOptional = categoryService.getById(categoryId);
-    return categoryOptional
-        .map(category -> new ResponseEntity<>(category, HttpStatus.OK))
-        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    Category category = categoryService.getById(id);
+    return new ResponseEntity<>(category, HttpStatus.OK);
   }
 
   @GetMapping("/{id}/products")
   public ResponseEntity<Page<Product>> getCategoryProducts(
-      @PathVariable("id") Long categoryId, @PageableDefault Pageable pageable) {
+      @PathVariable("id") Long id, Pageable pageable) {
 
-    Page<Product> products = productService.findAllCategoryProducts(categoryId, pageable);
-    if (products.getTotalElements() == 0) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid category id");
     }
+    Page<Product> products = productService.findAllCategoryProducts(id, pageable);
     return new ResponseEntity<>(products, HttpStatus.OK);
   }
 
-  @Secured({"ROLE_ADMIN"})
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @PostMapping()
-  public ResponseEntity<Category> addNew(@RequestBody Category requestCategory) {
+  public ResponseEntity<Category> addNew(
+      @RequestBody @Valid CreateCategoryRequest createCategoryRequest) {
 
-    if (requestCategory == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(createCategoryRequest)) {
+      throw new InvalidArgumentException("Wrong data");
     }
-    Category category = categoryService.create(requestCategory);
+    Category category = categoryService.create(createCategoryRequest);
     return new ResponseEntity<>(category, HttpStatus.CREATED);
   }
 
-  @Secured({"ROLE_ADMIN"})
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @PutMapping
-  public ResponseEntity<Category> update(@RequestBody Category requestCategory) {
+  public ResponseEntity<Category> update(@RequestBody UpdateCategoryRequest updateCategoryRequest) {
 
-    if (requestCategory == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(updateCategoryRequest)) {
+      throw new InvalidArgumentException("Wrong data");
     }
-    Category category = categoryService.update(requestCategory);
+    Category category = categoryService.update(updateCategoryRequest);
     return new ResponseEntity<>(category, HttpStatus.OK);
   }
 
-  @Secured({"ROLE_ADMIN"})
+  @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @DeleteMapping("{id}")
   public ResponseEntity<Category> delete(@PathVariable Long id) {
 
-    Optional<Category> category = categoryService.getById(id);
-    if (category.isEmpty()) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid category id");
     }
     categoryService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
