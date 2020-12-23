@@ -4,6 +4,7 @@ import com.spanfish.shop.entity.Cart;
 import com.spanfish.shop.entity.CartItem;
 import com.spanfish.shop.entity.Customer;
 import com.spanfish.shop.entity.Product;
+import com.spanfish.shop.exception.ResourceNotFoundException;
 import com.spanfish.shop.repository.CartRepository;
 import com.spanfish.shop.service.CartService;
 import com.spanfish.shop.service.CustomerService;
@@ -37,7 +38,6 @@ public class CartServiceImpl implements CartService {
     return Optional.of(cart);
   }
 
-  // TODO UserService
   @Override
   public Cart addToCart(Long productId, Integer amount) {
 
@@ -63,7 +63,7 @@ public class CartServiceImpl implements CartService {
       }
     }
 
-    Product product = productService.findById(productId).get();
+    Product product = productService.findById(productId);
 
     CartItem cartItem = CartItem.builder().cart(cart).amount(amount).product(product).build();
 
@@ -76,14 +76,17 @@ public class CartServiceImpl implements CartService {
   @Override
   public Cart incrCartItem(Long productId, Integer amount) {
 
-    Customer customer = customerService.getById(1L).get();
+    Customer customer = customerService.getCustomer();
     Cart cart = customer.getCart();
 
     CartItem cartItem =
         cart.getCartItemList().stream()
             .filter(ci -> ci.getProduct().getId().equals(productId))
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Item not found"));
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format("Could not find any cart item with the ID %d", productId)));
 
     cartItem.setAmount(cartItem.getAmount() + amount);
     cart = cartRepository.save(calculateTotalPrice(cart));
@@ -93,14 +96,17 @@ public class CartServiceImpl implements CartService {
   @Override
   public Cart decrCartItem(Long productId, Integer amount) {
 
-    Customer customer = customerService.getById(1L).get();
+    Customer customer = customerService.getCustomer();
     Cart cart = customer.getCart();
 
     CartItem cartItem =
         cart.getCartItemList().stream()
             .filter(ci -> ci.getProduct().getId().equals(productId))
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Item not found"));
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format("Could not find any cart item with the ID %d", productId)));
 
     if (cartItem.getAmount() <= 0) {
       cart.getCartItemList().remove(cartItem);
@@ -116,14 +122,17 @@ public class CartServiceImpl implements CartService {
   @Override
   public Cart removeCartItem(Long productId) {
 
-    Customer customer = customerService.getById(1L).get();
+    Customer customer = customerService.getCustomer();
     Cart cart = customer.getCart();
 
     CartItem cartItem =
         cart.getCartItemList().stream()
             .filter(ci -> ci.getProduct().getId().equals(productId))
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Item not found"));
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format("Could not find any cart item with the ID %d", productId)));
 
     cart.getCartItemList().remove(cartItem);
 
@@ -139,7 +148,7 @@ public class CartServiceImpl implements CartService {
   @Override
   public void clearCart() {
 
-    Customer customer = customerService.getById(1L).get();
+    Customer customer = customerService.getCustomer();
     Cart cart = customer.getCart();
     cart.getCartItemList().clear();
     cart.setTotalPrice(null);
