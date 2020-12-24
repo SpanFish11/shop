@@ -9,7 +9,6 @@ import com.spanfish.shop.service.CategoryService;
 import com.spanfish.shop.service.SubcategoryService;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,13 +25,12 @@ public class SubcategoryServiceImpl implements SubcategoryService {
   @Override
   @Cacheable(key = "{#root.methodName, #id}")
   public SubCategory getById(Long id) {
-
-    Optional<SubCategory> optionalSubCategory = subcategoryRepository.findById(id);
-    if (optionalSubCategory.isEmpty()) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any subcategory with the ID %d", id));
-    }
-    return optionalSubCategory.get();
+    return subcategoryRepository
+        .findById(id)
+        .orElseThrow(
+            () ->
+                new ResourceNotFoundException(
+                    String.format("Could not find any subcategory with the ID %d", id)));
   }
 
   @Override

@@ -8,7 +8,6 @@ import com.spanfish.shop.repository.ManufacturerRepository;
 import com.spanfish.shop.service.ManufacturerService;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,13 +29,12 @@ public class ManufacturerServiceImpl implements ManufacturerService {
   @Override
   @Cacheable(key = "{#root.methodName, #id}")
   public Manufacturer findById(Long id) {
-
-    Optional<Manufacturer> optionalManufacturer = manufacturerRepository.findById(id);
-    if (optionalManufacturer.isEmpty()) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any manufacturer with the ID %d", id));
-    }
-    return optionalManufacturer.get();
+    return manufacturerRepository
+        .findById(id)
+        .orElseThrow(
+            () ->
+                new ResourceNotFoundException(
+                    String.format("Could not find any manufacturer with the ID %d", id)));
   }
 
   @Override

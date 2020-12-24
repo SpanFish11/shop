@@ -8,7 +8,6 @@ import com.spanfish.shop.repository.CategoryRepository;
 import com.spanfish.shop.service.CategoryService;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,13 +29,12 @@ public class CategoryServiceImpl implements CategoryService {
   @Override
   @Cacheable(key = "{#root.methodName, #id}")
   public Category getById(Long id) {
-
-    Optional<Category> optionalCategory = categoryRepository.findById(id);
-    if (optionalCategory.isEmpty()) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any category with the ID %d", id));
-    }
-    return optionalCategory.get();
+    return categoryRepository
+        .findById(id)
+        .orElseThrow(
+            () ->
+                new ResourceNotFoundException(
+                    String.format("Could not find any category with the ID %d", id)));
   }
 
   @Override
