@@ -1,16 +1,14 @@
 package com.spanfish.shop.rest;
 
 import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.request.customer.PasswordResetRequest;
-import com.spanfish.shop.entity.request.customer.RegisterCustomerRequest;
+import com.spanfish.shop.entity.request.customer.ResetPasswordRequest;
 import com.spanfish.shop.entity.request.customer.UpdateCustomerAddressRequest;
 import com.spanfish.shop.entity.request.customer.UpdateCustomerRequest;
 import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.service.CustomerService;
-import com.spanfish.shop.service.VerificationTokenService;
+import com.spanfish.shop.service.TokenService;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -24,54 +22,29 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/customers")
 public class CustomerController {
 
   private final CustomerService customerService;
-  private final VerificationTokenService verificationTokenService;
+  private final TokenService tokenService;
 
   @GetMapping
   public ResponseEntity<Customer> get() {
-
-    Customer customer = customerService.getCustomer();
-    return new ResponseEntity<>(customer, HttpStatus.OK);
-  }
-
-  @GetMapping("/activation")
-  public ResponseEntity<HttpStatus> activate(@RequestParam("token") String token) {
-
-    if (StringUtils.isEmpty(token)) {
-      throw new InvalidArgumentException("Invalid activation code");
-    }
-    verificationTokenService.validateToken(token);
-    return new ResponseEntity<>(HttpStatus.OK);
-  }
-
-  @PostMapping
-  public ResponseEntity<Customer> register(
-      @RequestBody RegisterCustomerRequest registerCustomerRequest) {
-
-    if (Objects.isNull(registerCustomerRequest)) {
-      throw new InvalidArgumentException("Wrong data");
-    }
-    Customer customer = customerService.save(registerCustomerRequest);
-    verificationTokenService.createOrUpdateToken(customer);
-    return new ResponseEntity<>(customer, HttpStatus.CREATED);
+    return new ResponseEntity<>(customerService.getCustomer(), HttpStatus.OK);
   }
 
   @PostMapping("/password/reset")
   public ResponseEntity<HttpStatus> resetPassword(
-      @RequestBody PasswordResetRequest passwordResetRequest) {
+      @RequestBody ResetPasswordRequest resetPasswordRequest) {
 
-    if (Objects.isNull(passwordResetRequest)) {
+    if (Objects.isNull(resetPasswordRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    customerService.resetPassword(passwordResetRequest);
+    customerService.resetPassword(resetPasswordRequest);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

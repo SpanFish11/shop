@@ -49,8 +49,7 @@ public class ManufacturerController {
     if (Objects.isNull(id) || id <= 0) {
       throw new InvalidArgumentException("Invalid manufacturer id");
     }
-    Manufacturer manufacturer = manufacturerService.findById(id);
-    return new ResponseEntity<>(manufacturer, HttpStatus.OK);
+    return new ResponseEntity<>(manufacturerService.findById(id), HttpStatus.OK);
   }
 
   @GetMapping("/{id}/products")
@@ -60,8 +59,8 @@ public class ManufacturerController {
     if (Objects.isNull(id) || id <= 0) {
       throw new InvalidArgumentException("Invalid manufacturer id");
     }
-    Page<Product> products = productService.findAllManufacturersProducts(id, pageable);
-    return new ResponseEntity<>(products, HttpStatus.OK);
+    return new ResponseEntity<>(
+        productService.findAllManufacturersProducts(id, pageable), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
@@ -72,8 +71,8 @@ public class ManufacturerController {
     if (Objects.isNull(createManufacturerRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    Manufacturer manufacturer = manufacturerService.save(createManufacturerRequest);
-    return new ResponseEntity<>(manufacturer, HttpStatus.CREATED);
+    return new ResponseEntity<>(
+        manufacturerService.save(createManufacturerRequest), HttpStatus.CREATED);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
@@ -84,8 +83,8 @@ public class ManufacturerController {
     if (Objects.isNull(updateManufacturerRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    Manufacturer manufacturer = manufacturerService.update(updateManufacturerRequest);
-    return new ResponseEntity<>(manufacturer, HttpStatus.OK);
+    return new ResponseEntity<>(
+        manufacturerService.update(updateManufacturerRequest), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})

@@ -1,8 +1,9 @@
 package com.spanfish.shop.rest;
 
 import com.spanfish.shop.entity.Product;
+import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.service.ProductService;
-import java.util.Optional;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,15 +38,12 @@ public class ProductController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Product> get(@PathVariable("id") Long productId) {
+  public ResponseEntity<Product> get(@PathVariable("id") Long id) {
 
-    if (productId == null) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid product id");
     }
-    Optional<Product> productOptional = productService.findById(productId);
-    return productOptional
-        .map(product -> new ResponseEntity<>(product, HttpStatus.OK))
-        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return new ResponseEntity<>(productService.findById(id), HttpStatus.OK);
   }
 
   @Secured({"ROLE_ADMIN"})
@@ -55,8 +53,7 @@ public class ProductController {
     if (requestProduct == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    Product product = productService.create(requestProduct);
-    return new ResponseEntity<>(product, HttpStatus.CREATED);
+    return new ResponseEntity<>(productService.create(requestProduct), HttpStatus.CREATED);
   }
 
   @Secured({"ROLE_ADMIN"})
@@ -66,17 +63,15 @@ public class ProductController {
     if (requestProduct == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    Product product = productService.update(requestProduct);
-    return new ResponseEntity<>(product, HttpStatus.OK);
+    return new ResponseEntity<>(productService.update(requestProduct), HttpStatus.OK);
   }
 
   @Secured({"ROLE_ADMIN"})
   @DeleteMapping("{id}")
   public ResponseEntity<Product> delete(@PathVariable Long id) {
 
-    Optional<Product> product = productService.findById(id);
-    if (product.isEmpty()) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    if (Objects.isNull(id) || id <= 0) {
+      throw new InvalidArgumentException("Invalid product id");
     }
     productService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

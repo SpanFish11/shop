@@ -34,9 +34,7 @@ public class SubCategoryController {
 
   @GetMapping
   public ResponseEntity<List<SubCategory>> getAll() {
-
-    List<SubCategory> subCategories = subcategoryService.getAll();
-    return new ResponseEntity<>(subCategories, HttpStatus.OK);
+    return new ResponseEntity<>(subcategoryService.getAll(), HttpStatus.OK);
   }
 
   @GetMapping("{id}")
@@ -45,8 +43,7 @@ public class SubCategoryController {
     if (Objects.isNull(id) || id <= 0) {
       throw new InvalidArgumentException("Invalid subcategory id");
     }
-    SubCategory subCategory = subcategoryService.getById(id);
-    return new ResponseEntity<>(subCategory, HttpStatus.OK);
+    return new ResponseEntity<>(subcategoryService.getById(id), HttpStatus.OK);
   }
 
   @GetMapping("/{id}/products")
@@ -56,8 +53,8 @@ public class SubCategoryController {
     if (Objects.isNull(id) || id <= 0) {
       throw new InvalidArgumentException("Invalid subcategory id");
     }
-    Page<Product> products = productService.findAllSubCategoryProducts(id, pageable);
-    return new ResponseEntity<>(products, HttpStatus.OK);
+    return new ResponseEntity<>(
+        productService.findAllSubCategoryProducts(id, pageable), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
@@ -68,8 +65,7 @@ public class SubCategoryController {
     if (Objects.isNull(createSubCategoryRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    SubCategory subCategory = subcategoryService.create(createSubCategoryRequest);
-    return new ResponseEntity<>(subCategory, HttpStatus.OK);
+    return new ResponseEntity<>(subcategoryService.create(createSubCategoryRequest), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
@@ -80,8 +76,7 @@ public class SubCategoryController {
     if (Objects.isNull(updateSubCategoryRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    SubCategory subCategory = subcategoryService.update(updateSubCategoryRequest);
-    return new ResponseEntity<>(subCategory, HttpStatus.OK);
+    return new ResponseEntity<>(subcategoryService.update(updateSubCategoryRequest), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})

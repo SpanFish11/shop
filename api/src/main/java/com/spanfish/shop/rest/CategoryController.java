@@ -46,8 +46,7 @@ public class CategoryController {
     if (Objects.isNull(id) || id <= 0) {
       throw new InvalidArgumentException("Invalid category id");
     }
-    Category category = categoryService.getById(id);
-    return new ResponseEntity<>(category, HttpStatus.OK);
+    return new ResponseEntity<>(categoryService.getById(id), HttpStatus.OK);
   }
 
   @GetMapping("/{id}/products")
@@ -57,8 +56,8 @@ public class CategoryController {
     if (Objects.isNull(id) || id <= 0) {
       throw new InvalidArgumentException("Invalid category id");
     }
-    Page<Product> products = productService.findAllCategoryProducts(id, pageable);
-    return new ResponseEntity<>(products, HttpStatus.OK);
+    return new ResponseEntity<>(
+        productService.findAllCategoryProducts(id, pageable), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
@@ -69,8 +68,7 @@ public class CategoryController {
     if (Objects.isNull(createCategoryRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    Category category = categoryService.create(createCategoryRequest);
-    return new ResponseEntity<>(category, HttpStatus.CREATED);
+    return new ResponseEntity<>(categoryService.create(createCategoryRequest), HttpStatus.CREATED);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
@@ -80,8 +78,7 @@ public class CategoryController {
     if (Objects.isNull(updateCategoryRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    Category category = categoryService.update(updateCategoryRequest);
-    return new ResponseEntity<>(category, HttpStatus.OK);
+    return new ResponseEntity<>(categoryService.update(updateCategoryRequest), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})

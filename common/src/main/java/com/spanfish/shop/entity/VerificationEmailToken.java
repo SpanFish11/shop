@@ -12,17 +12,21 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Entity
-@Table(name = "m_verification_token")
-public class VerificationToken implements Serializable {
+@Table(name = "m_verification_email_token")
+public class VerificationEmailToken implements Serializable {
 
   private static final long serialVersionUID = -3946054197822939959L;
 

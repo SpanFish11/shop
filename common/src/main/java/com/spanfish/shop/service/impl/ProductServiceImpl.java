@@ -4,7 +4,6 @@ import com.spanfish.shop.entity.Product;
 import com.spanfish.shop.exception.ResourceNotFoundException;
 import com.spanfish.shop.repository.ProductRepository;
 import com.spanfish.shop.service.ProductService;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
@@ -18,8 +17,14 @@ public class ProductServiceImpl implements ProductService {
   private final ProductRepository productRepository;
 
   @Override
-  public Optional<Product> findById(Long productId) {
-    return productRepository.findById(productId);
+  public Product findById(Long id) {
+
+    return productRepository
+        .findById(id)
+        .orElseThrow(
+            () ->
+                new ResourceNotFoundException(
+                    String.format("Could not find any product with the ID %d", id)));
   }
 
   @Override

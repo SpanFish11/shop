@@ -2,7 +2,7 @@ package com.spanfish.shop.service.impl;
 
 import com.spanfish.shop.entity.Customer;
 import com.spanfish.shop.entity.Role;
-import com.spanfish.shop.entity.request.customer.PasswordResetRequest;
+import com.spanfish.shop.entity.request.customer.ResetPasswordRequest;
 import com.spanfish.shop.entity.request.customer.RegisterCustomerRequest;
 import com.spanfish.shop.entity.request.customer.UpdateCustomerAddressRequest;
 import com.spanfish.shop.entity.request.customer.UpdateCustomerRequest;
@@ -126,15 +126,15 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  public void resetPassword(PasswordResetRequest passwordResetRequest) {
+  public void resetPassword(ResetPasswordRequest resetPasswordRequest) {
 
     Customer customer = getCustomer();
 
-    if (!passwordEncoder.matches(passwordResetRequest.getOldPassword(), customer.getPassword())) {
+    if (!passwordEncoder.matches(resetPasswordRequest.getOldPassword(), customer.getPassword())) {
       throw new InvalidArgumentException("Invalid password");
     }
 
-    customer.setPassword(passwordEncoder.encode(passwordResetRequest.getNewPassword()));
+    customer.setPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword()));
     customerRepository.save(customer);
   }
 

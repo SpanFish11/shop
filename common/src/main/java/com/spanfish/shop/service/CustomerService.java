@@ -1,7 +1,7 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.request.customer.PasswordResetRequest;
+import com.spanfish.shop.entity.request.customer.ResetPasswordRequest;
 import com.spanfish.shop.entity.request.customer.RegisterCustomerRequest;
 import com.spanfish.shop.entity.request.customer.UpdateCustomerAddressRequest;
 import com.spanfish.shop.entity.request.customer.UpdateCustomerRequest;
@@ -28,5 +28,5 @@ public interface CustomerService {
 
   void delete(Long id);
 
-  void resetPassword(PasswordResetRequest passwordResetRequest);
+  void resetPassword(ResetPasswordRequest resetPasswordRequest);
 }

@@ -39,7 +39,6 @@ public class ContactsController {
     if (requestContacts == null || customerId == null) {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-    Contacts contacts = contactsService.update(customerId, requestContacts);
-    return new ResponseEntity<>(contacts, HttpStatus.OK);
+    return new ResponseEntity<>(contactsService.update(customerId, requestContacts), HttpStatus.OK);
   }
 }
