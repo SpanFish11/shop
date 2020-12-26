@@ -16,4 +16,6 @@ public interface CategoryService {
   Category update(UpdateCategoryRequest updateCategoryRequest);
 
   void delete(Long categoryId);
+
+  Boolean existsById(Long id);
 }

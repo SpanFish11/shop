@@ -7,7 +7,6 @@ import com.spanfish.shop.exception.ResourceNotFoundException;
 import com.spanfish.shop.repository.CategoryRepository;
 import com.spanfish.shop.service.CategoryService;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,7 +38,6 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public Category create(CreateCategoryRequest request) {
-
     Category category = new Category();
     category.setName(request.getName());
     return categoryRepository.save(category);
@@ -47,7 +45,6 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public Category update(UpdateCategoryRequest request) {
-
     Category category = getById(request.getId());
     category.setName(request.getName());
     return categoryRepository.save(category);
@@ -55,13 +52,17 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void delete(Long id) {
-
     if (existsById(id)) {
       categoryRepository.deleteById(id);
     }
   }
 
-  private Boolean existsById(Long id) {
-    return Objects.nonNull(getById(id));
+  @Override
+  public Boolean existsById(Long id) {
+    if (!categoryRepository.existsById(id)) {
+      throw new ResourceNotFoundException(
+          String.format("Could not find any category with the ID %d", id));
+    }
+    return categoryRepository.existsById(id);
   }
 }

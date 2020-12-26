@@ -70,7 +70,7 @@ public class TokenServiceImpl implements TokenService {
 
   @Override
   public void createPasswordResetToken(String email) {
-    Customer customer = customerService.getCustomer();
+    Customer customer = customerService.findCustomerByEmailIgnoreCase(email);
     final String token = generateToken();
 
     PasswordResetToken passwordResetToken =
@@ -116,10 +116,10 @@ public class TokenServiceImpl implements TokenService {
   }
 
   private Date generateExpirationTime() {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(new Timestamp(cal.getTime().getTime()));
-    cal.add(Calendar.MINUTE, EXPIRATION);
-    return new Date(cal.getTime().getTime());
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Timestamp(calendar.getTime().getTime()));
+    calendar.add(Calendar.MINUTE, EXPIRATION);
+    return new Date(calendar.getTime().getTime());
   }
 
   private void checkTokenExpire(Date date) {

@@ -16,4 +16,6 @@ public interface SubcategoryService {
   SubCategory update(UpdateSubCategoryRequest updateSubCategoryRequest);
 
   void delete(Long id);
+
+  Boolean existsById(Long Id);
 }

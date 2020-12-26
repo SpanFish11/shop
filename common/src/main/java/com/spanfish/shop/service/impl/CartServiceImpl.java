@@ -25,8 +25,7 @@ public class CartServiceImpl implements CartService {
   private final CustomerService customerService;
 
   @Override
-  public Optional<Cart> getCart() {
-
+  public Cart getCart() {
     Customer customer = customerService.getCustomer();
     Cart cart = customer.getCart();
 
@@ -35,19 +34,12 @@ public class CartServiceImpl implements CartService {
       customer.setCart(cart);
       cartRepository.save(cart);
     }
-    return Optional.of(cart);
+    return cart;
   }
 
   @Override
   public Cart addToCart(Long productId, Integer amount) {
-
-    Customer customer = customerService.getCustomer();
-    Cart cart = customer.getCart();
-
-    if (Objects.isNull(cart)) {
-      cart = createCart(customer);
-      customer.setCart(cart);
-    }
+    Cart cart = getCart();
 
     if (Objects.nonNull(cart.getCartItemList()) && !cart.getCartItemList().isEmpty()) {
       Optional<CartItem> cartItem =
@@ -69,15 +61,12 @@ public class CartServiceImpl implements CartService {
 
     cart.getCartItemList().add(cartItem);
     cart = cartRepository.save(calculateTotalPrice(cart));
-
     return cart;
   }
 
   @Override
   public Cart incrCartItem(Long productId, Integer amount) {
-
-    Customer customer = customerService.getCustomer();
-    Cart cart = customer.getCart();
+    Cart cart = getCart();
 
     CartItem cartItem =
         cart.getCartItemList().stream()
@@ -95,9 +84,7 @@ public class CartServiceImpl implements CartService {
 
   @Override
   public Cart decrCartItem(Long productId, Integer amount) {
-
-    Customer customer = customerService.getCustomer();
-    Cart cart = customer.getCart();
+    Cart cart = getCart();
 
     CartItem cartItem =
         cart.getCartItemList().stream()
@@ -121,9 +108,7 @@ public class CartServiceImpl implements CartService {
 
   @Override
   public Cart removeCartItem(Long productId) {
-
-    Customer customer = customerService.getCustomer();
-    Cart cart = customer.getCart();
+    Cart cart = getCart();
 
     CartItem cartItem =
         cart.getCartItemList().stream()
@@ -147,9 +132,7 @@ public class CartServiceImpl implements CartService {
 
   @Override
   public void clearCart() {
-
-    Customer customer = customerService.getCustomer();
-    Cart cart = customer.getCart();
+    Cart cart = getCart();
     cart.getCartItemList().clear();
     cart.setTotalPrice(null);
     cartRepository.save(cart);

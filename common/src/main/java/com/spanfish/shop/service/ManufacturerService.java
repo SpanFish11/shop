@@ -16,4 +16,6 @@ public interface ManufacturerService {
   Manufacturer update(UpdateManufacturerRequest updateManufacturerRequest);
 
   void delete(Long manufacturerId);
+
+  Boolean existsById(Long id);
 }

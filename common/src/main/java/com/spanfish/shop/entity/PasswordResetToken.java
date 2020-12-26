@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 import static javax.persistence.TemporalType.TIMESTAMP;
 
@@ -23,7 +22,6 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Entity
 @Table(name = "m_password_reset_token")
 public class PasswordResetToken implements Serializable {

@@ -7,7 +7,6 @@ import com.spanfish.shop.exception.ResourceNotFoundException;
 import com.spanfish.shop.repository.ManufacturerRepository;
 import com.spanfish.shop.service.ManufacturerService;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,7 +38,6 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
   @Override
   public Manufacturer save(CreateManufacturerRequest request) {
-
     Manufacturer manufacturer = new Manufacturer();
     manufacturer.setName(request.getName());
     manufacturer.setDescription(request.getDescription());
@@ -48,7 +46,6 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
   @Override
   public Manufacturer update(UpdateManufacturerRequest request) {
-
     Manufacturer manufacturer = findById(request.getId());
     manufacturer.setName(request.getName());
     manufacturer.setDescription(request.getDescription());
@@ -57,13 +54,17 @@ public class ManufacturerServiceImpl implements ManufacturerService {
 
   @Override
   public void delete(Long id) {
-
     if (existsById(id)) {
       manufacturerRepository.deleteById(id);
     }
   }
 
-  private Boolean existsById(Long id) {
-    return Objects.nonNull(findById(id));
+  @Override
+  public Boolean existsById(Long id) {
+    if (!manufacturerRepository.existsById(id)) {
+      throw new ResourceNotFoundException(
+          String.format("Could not find any manufacturer with the ID %d", id));
+    }
+    return manufacturerRepository.existsById(id);
   }
 }

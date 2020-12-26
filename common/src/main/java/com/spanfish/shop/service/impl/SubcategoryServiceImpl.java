@@ -8,7 +8,6 @@ import com.spanfish.shop.repository.SubcategoryRepository;
 import com.spanfish.shop.service.CategoryService;
 import com.spanfish.shop.service.SubcategoryService;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -41,7 +40,6 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 
   @Override
   public SubCategory create(CreateSubCategoryRequest request) {
-
     SubCategory subCategory = new SubCategory();
     subCategory.setName(request.getName());
     subCategory.setCategory(categoryService.getById(request.getCategoryId()));
@@ -50,7 +48,6 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 
   @Override
   public SubCategory update(UpdateSubCategoryRequest request) {
-
     SubCategory subCategory = getById(request.getId());
     subCategory.setName(request.getName());
     subCategory.setCategory(categoryService.getById(request.getCategoryId()));
@@ -59,13 +56,17 @@ public class SubcategoryServiceImpl implements SubcategoryService {
 
   @Override
   public void delete(Long id) {
-
     if (existsById(id)) {
       subcategoryRepository.deleteById(id);
     }
   }
 
-  private Boolean existsById(Long id) {
-    return Objects.nonNull(getById(id));
+  @Override
+  public Boolean existsById(Long id) {
+    if (!subcategoryRepository.existsById(id)) {
+      throw new ResourceNotFoundException(
+          String.format("Could not find any subcategory with the ID %d", id));
+    }
+    return subcategoryRepository.existsById(id);
   }
 }

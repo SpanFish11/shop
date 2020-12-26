@@ -1,11 +1,10 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.entity.Cart;
-import java.util.Optional;
 
 public interface CartService {
 
-  Optional<Cart> getCart();
+  Cart getCart();
 
   Cart addToCart(Long id, Integer amount);
 
