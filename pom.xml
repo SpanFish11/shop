@@ -28,7 +28,7 @@
         <flyway.version>7.3.2</flyway.version>
         <mapstruct.version>1.4.1.Final</mapstruct.version>
         <aws.version>1.11.926</aws.version>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
