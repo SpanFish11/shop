@@ -1,5 +1,6 @@
 package com.spanfish.shop;
 
+import com.spanfish.shop.config.AWSS3Config;
 import com.spanfish.shop.config.ApplicationBeans;
 import com.spanfish.shop.config.CachingConfiguration;
 import com.spanfish.shop.config.MailSenderConfiguration;
@@ -19,7 +20,8 @@ import org.springframework.context.annotation.Import;
   ApplicationBeans.class,
   CachingConfiguration.class,
   SwaggerConfiguration.class,
-  MailSenderConfiguration.class
+  MailSenderConfiguration.class,
+  AWSS3Config.class
 })
 public class ShopApplication {
 

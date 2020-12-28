@@ -1,8 +1,9 @@
 package com.spanfish.shop.repository;
 
-import com.spanfish.shop.entity.VerificationEmailToken;
-import java.util.Optional;
+import com.spanfish.shop.model.entity.VerificationEmailToken;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.Optional;
 
 public interface VerificationEmailTokenRepository
     extends CrudRepository<VerificationEmailToken, Long> {

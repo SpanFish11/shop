@@ -1,13 +1,12 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.request.customer.ResetPasswordRequest;
-import com.spanfish.shop.entity.request.customer.UpdateCustomerAddressRequest;
-import com.spanfish.shop.entity.request.customer.UpdateCustomerRequest;
 import com.spanfish.shop.exception.InvalidArgumentException;
+import com.spanfish.shop.model.entity.Customer;
+import com.spanfish.shop.model.request.customer.ResetPasswordRequest;
+import com.spanfish.shop.model.request.customer.UpdateAddressRequest;
+import com.spanfish.shop.model.request.customer.UpdateCustomerRequest;
 import com.spanfish.shop.service.CustomerService;
 import com.spanfish.shop.service.TokenService;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +22,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,25 +55,22 @@ public class CustomerController {
     if (Objects.isNull(updateCustomerRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    Customer customer = customerService.update(updateCustomerRequest);
-    return new ResponseEntity<>(customer, HttpStatus.OK);
+    return new ResponseEntity<>(customerService.update(updateCustomerRequest), HttpStatus.OK);
   }
 
   @PutMapping("/address")
   public ResponseEntity<Customer> updateAddress(
-      @RequestBody UpdateCustomerAddressRequest updateCustomerAddressRequest) {
+      @RequestBody UpdateAddressRequest updateAddressRequest) {
 
-    if (Objects.isNull(updateCustomerAddressRequest)) {
+    if (Objects.isNull(updateAddressRequest)) {
       throw new InvalidArgumentException("Wrong data");
     }
-    Customer customer = customerService.updateAddress(updateCustomerAddressRequest);
-    return new ResponseEntity<>(customer, HttpStatus.OK);
+    return new ResponseEntity<>(customerService.updateAddress(updateAddressRequest), HttpStatus.OK);
   }
 
   @Secured({"ROLE_ADMIN"})
-  @DeleteMapping(value = "{id}")
+  @DeleteMapping("{id}")
   public ResponseEntity<HttpStatus> delete(@PathVariable Long id) {
-
     customerService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
@@ -92,7 +90,6 @@ public class CustomerController {
     if (Objects.isNull(id) || id <= 0) {
       throw new InvalidArgumentException("Invalid customer id");
     }
-    Customer customer = customerService.getById(id);
-    return new ResponseEntity<>(customer, HttpStatus.OK);
+    return new ResponseEntity<>(customerService.getById(id), HttpStatus.OK);
   }
 }

@@ -1,8 +1,9 @@
 package com.spanfish.shop.repository;
 
-import com.spanfish.shop.entity.PasswordResetToken;
-import java.util.Optional;
+import com.spanfish.shop.model.entity.PasswordResetToken;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.Optional;
 
 public interface PasswordResetTokenRepository extends CrudRepository<PasswordResetToken, Long> {
 

@@ -1,8 +1,9 @@
 package com.spanfish.shop.service;
 
-import com.spanfish.shop.entity.SubCategory;
-import com.spanfish.shop.entity.request.subcategory.CreateSubCategoryRequest;
-import com.spanfish.shop.entity.request.subcategory.UpdateSubCategoryRequest;
+import com.spanfish.shop.model.entity.SubCategory;
+import com.spanfish.shop.model.request.subcategory.CreateSubCategoryRequest;
+import com.spanfish.shop.model.request.subcategory.UpdateSubCategoryRequest;
+
 import java.util.List;
 
 public interface SubcategoryService {

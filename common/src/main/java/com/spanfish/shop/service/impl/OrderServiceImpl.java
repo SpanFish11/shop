@@ -1,19 +1,20 @@
 package com.spanfish.shop.service.impl;
 
-import com.spanfish.shop.entity.Cart;
-import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.Order;
-import com.spanfish.shop.entity.OrderProduct;
+import com.spanfish.shop.model.entity.Cart;
+import com.spanfish.shop.model.entity.Customer;
+import com.spanfish.shop.model.entity.Order;
+import com.spanfish.shop.model.entity.OrderProduct;
 import com.spanfish.shop.repository.OrderRepository;
 import com.spanfish.shop.service.CartService;
 import com.spanfish.shop.service.CustomerService;
 import com.spanfish.shop.service.OrderService;
-import java.util.ArrayList;
-import java.util.Calendar;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 
 @Service
 @RequiredArgsConstructor

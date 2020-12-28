@@ -1,27 +1,28 @@
 package com.spanfish.shop.service.impl;
 
-import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.PasswordResetToken;
-import com.spanfish.shop.entity.VerificationEmailToken;
-import com.spanfish.shop.entity.request.customer.ForgotResetPasswordRequest;
-import com.spanfish.shop.event.PasswordResetEvent;
-import com.spanfish.shop.event.VerificationEmailEvent;
 import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.exception.ResourceNotFoundException;
+import com.spanfish.shop.model.entity.Customer;
+import com.spanfish.shop.model.entity.PasswordResetToken;
+import com.spanfish.shop.model.entity.VerificationEmailToken;
+import com.spanfish.shop.model.event.PasswordResetEvent;
+import com.spanfish.shop.model.event.VerificationEmailEvent;
+import com.spanfish.shop.model.request.customer.ForgotResetPasswordRequest;
 import com.spanfish.shop.repository.PasswordResetTokenRepository;
 import com.spanfish.shop.repository.VerificationEmailTokenRepository;
 import com.spanfish.shop.service.CustomerService;
 import com.spanfish.shop.service.TokenService;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +66,7 @@ public class TokenServiceImpl implements TokenService {
     checkTokenExpire(verificationToken.getExpiration());
     customer.setEmailVerified(true);
     verificationEmailTokenRepository.deleteById(verificationToken.getId());
-    customerService.update(customer);
+    customerService.updateCustomer(customer);
   }
 
   @Override
@@ -112,7 +113,7 @@ public class TokenServiceImpl implements TokenService {
 
     customer.setPassword(passwordEncoder.encode(forgotResetPasswordRequest.getNewPassword()));
     passwordResetTokenRepository.deleteById(passwordResetToken.getId());
-    customerService.update(customer);
+    customerService.updateCustomer(customer);
   }
 
   private Date generateExpirationTime() {

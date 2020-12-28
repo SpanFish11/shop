@@ -1,16 +1,17 @@
 package com.spanfish.shop.service.impl;
 
-import com.spanfish.shop.entity.Manufacturer;
-import com.spanfish.shop.entity.request.manufacturer.CreateManufacturerRequest;
-import com.spanfish.shop.entity.request.manufacturer.UpdateManufacturerRequest;
 import com.spanfish.shop.exception.ResourceNotFoundException;
+import com.spanfish.shop.model.entity.Manufacturer;
+import com.spanfish.shop.model.request.manufacturer.CreateManufacturerRequest;
+import com.spanfish.shop.model.request.manufacturer.UpdateManufacturerRequest;
 import com.spanfish.shop.repository.ManufacturerRepository;
 import com.spanfish.shop.service.ManufacturerService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -65,6 +66,6 @@ public class ManufacturerServiceImpl implements ManufacturerService {
       throw new ResourceNotFoundException(
           String.format("Could not find any manufacturer with the ID %d", id));
     }
-    return manufacturerRepository.existsById(id);
+    return true;
   }
 }

@@ -1,13 +1,15 @@
 package com.spanfish.shop.service;
 
-import com.spanfish.shop.entity.Product;
-import java.util.Optional;
+import com.spanfish.shop.model.entity.Product;
+import com.spanfish.shop.model.request.product.CreateProductRequest;
+import com.spanfish.shop.model.request.product.UpdateProductRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-  Optional<Product> findById(Long productId);
+  Product findById(Long productId);
 
   Page<Product> findAll(Pageable pageable);
 
@@ -17,9 +19,15 @@ public interface ProductService {
 
   Page<Product> findAllSubCategoryProducts(Long subCategoryId, Pageable pageable);
 
-  Product create(Product product);
+  Product create(CreateProductRequest createProductRequest);
 
-  Product update(Product product);
+  Product update(UpdateProductRequest updateProductRequest);
+
+  Product addProduct(String json, MultipartFile photo);
+
+  Product updateProduct(String json, MultipartFile photo);
 
   void delete(Long productId);
+
+  Boolean existsById(Long id);
 }

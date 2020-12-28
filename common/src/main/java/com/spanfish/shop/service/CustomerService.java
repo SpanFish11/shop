@@ -1,10 +1,10 @@
 package com.spanfish.shop.service;
 
-import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.request.customer.ResetPasswordRequest;
-import com.spanfish.shop.entity.request.customer.RegisterCustomerRequest;
-import com.spanfish.shop.entity.request.customer.UpdateCustomerAddressRequest;
-import com.spanfish.shop.entity.request.customer.UpdateCustomerRequest;
+import com.spanfish.shop.model.entity.Customer;
+import com.spanfish.shop.model.request.customer.RegisterCustomerRequest;
+import com.spanfish.shop.model.request.customer.ResetPasswordRequest;
+import com.spanfish.shop.model.request.customer.UpdateAddressRequest;
+import com.spanfish.shop.model.request.customer.UpdateCustomerRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -22,9 +22,9 @@ public interface CustomerService {
 
   Customer update(UpdateCustomerRequest updateCustomerRequest);
 
-  Customer update(Customer customer);
+  void updateCustomer(Customer customer);
 
-  Customer updateAddress(UpdateCustomerAddressRequest updateCustomerAddressRequest);
+  Customer updateAddress(UpdateAddressRequest updateAddressRequest);
 
   void delete(Long id);
 

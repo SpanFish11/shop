@@ -1,14 +1,12 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.entity.Manufacturer;
-import com.spanfish.shop.entity.Product;
-import com.spanfish.shop.entity.request.manufacturer.CreateManufacturerRequest;
-import com.spanfish.shop.entity.request.manufacturer.UpdateManufacturerRequest;
 import com.spanfish.shop.exception.InvalidArgumentException;
+import com.spanfish.shop.model.entity.Manufacturer;
+import com.spanfish.shop.model.entity.Product;
+import com.spanfish.shop.model.request.manufacturer.CreateManufacturerRequest;
+import com.spanfish.shop.model.request.manufacturer.UpdateManufacturerRequest;
 import com.spanfish.shop.service.ManufacturerService;
 import com.spanfish.shop.service.ProductService;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +21,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/manufacturers")

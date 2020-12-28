@@ -1,20 +1,21 @@
 package com.spanfish.shop.service.impl;
 
-import com.spanfish.shop.entity.Cart;
-import com.spanfish.shop.entity.CartItem;
-import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.Product;
 import com.spanfish.shop.exception.ResourceNotFoundException;
+import com.spanfish.shop.model.entity.Cart;
+import com.spanfish.shop.model.entity.CartItem;
+import com.spanfish.shop.model.entity.Customer;
+import com.spanfish.shop.model.entity.Product;
 import com.spanfish.shop.repository.CartRepository;
 import com.spanfish.shop.service.CartService;
 import com.spanfish.shop.service.CustomerService;
 import com.spanfish.shop.service.ProductService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

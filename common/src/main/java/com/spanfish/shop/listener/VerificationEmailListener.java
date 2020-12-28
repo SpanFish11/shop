@@ -1,8 +1,9 @@
 package com.spanfish.shop.listener;
 
-import com.spanfish.shop.event.VerificationEmailEvent;
+import com.spanfish.shop.model.event.VerificationEmailEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,7 @@ public class VerificationEmailListener implements ApplicationListener<Verificati
           + "http://localhost:8080/api/v1/accounts/registration/email-verification?token=%s";
 
   @Override
-  public void onApplicationEvent(
-      @SuppressWarnings("NullableProblems") VerificationEmailEvent event) {
+  public void onApplicationEvent(@NonNull VerificationEmailEvent event) {
     this.makeMessage(event);
   }
 

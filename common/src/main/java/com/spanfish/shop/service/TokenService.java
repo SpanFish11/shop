@@ -1,7 +1,7 @@
 package com.spanfish.shop.service;
 
-import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.request.customer.ForgotResetPasswordRequest;
+import com.spanfish.shop.model.entity.Customer;
+import com.spanfish.shop.model.request.customer.ForgotResetPasswordRequest;
 
 public interface TokenService {
 

@@ -1,6 +1,6 @@
 package com.spanfish.shop.service;
 
-import com.spanfish.shop.entity.Cart;
+import com.spanfish.shop.model.entity.Cart;
 
 public interface CartService {
 

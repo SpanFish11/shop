@@ -1,7 +1,7 @@
 package com.spanfish.shop.mapper;
 
-import com.spanfish.shop.dto.CustomerDTO;
-import com.spanfish.shop.entity.Customer;
+import com.spanfish.shop.model.dto.CustomerDTO;
+import com.spanfish.shop.model.entity.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -10,16 +10,14 @@ import org.mapstruct.Mappings;
 public interface CustomerMapper {
 
   @Mappings({
-    @Mapping(source = "name", target = "customerName"),
-    @Mapping(source = "email", target = "customerEmail"),
-    @Mapping(source = "password", target = "customerPassword")
+    @Mapping(source = "id", target = "id"),
+    @Mapping(source = "name", target = "name"),
+    @Mapping(source = "email", target = "email"),
+    @Mapping(source = "registrationDate", target = "registrationDate"),
+    @Mapping(source = "contacts.phone", target = "phone"),
+    @Mapping(source = "contacts.city", target = "city"),
+    @Mapping(source = "contacts.address", target = "address"),
+    @Mapping(source = "contacts.zip", target = "zipCode")
   })
-  CustomerDTO toCustomerDTO(Customer entity);
-
-  @Mappings({
-    @Mapping(source = "customerName", target = "name"),
-    @Mapping(source = "customerEmail", target = "email"),
-    @Mapping(source = "customerPassword", target = "password")
-  })
-  Customer fromCustomerDTO(CustomerDTO dto);
+  CustomerDTO toDTO(Customer entity);
 }

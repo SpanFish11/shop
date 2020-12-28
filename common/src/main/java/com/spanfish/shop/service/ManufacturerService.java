@@ -1,8 +1,9 @@
 package com.spanfish.shop.service;
 
-import com.spanfish.shop.entity.Manufacturer;
-import com.spanfish.shop.entity.request.manufacturer.CreateManufacturerRequest;
-import com.spanfish.shop.entity.request.manufacturer.UpdateManufacturerRequest;
+import com.spanfish.shop.model.entity.Manufacturer;
+import com.spanfish.shop.model.request.manufacturer.CreateManufacturerRequest;
+import com.spanfish.shop.model.request.manufacturer.UpdateManufacturerRequest;
+
 import java.util.List;
 
 public interface ManufacturerService {

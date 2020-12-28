@@ -1,11 +1,9 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.entity.Cart;
-import com.spanfish.shop.entity.request.cart.CartItemRequest;
 import com.spanfish.shop.exception.InvalidArgumentException;
-import com.spanfish.shop.repository.CartRepository;
+import com.spanfish.shop.model.entity.Cart;
+import com.spanfish.shop.model.request.cart.CartItemRequest;
 import com.spanfish.shop.service.CartService;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
 public class CartController {
 
   private final CartService cartService;
-  private final CartRepository cartRepository;
 
   @GetMapping
   public ResponseEntity<Cart> getCart() {

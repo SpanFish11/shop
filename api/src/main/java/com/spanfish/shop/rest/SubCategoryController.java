@@ -1,14 +1,12 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.entity.Product;
-import com.spanfish.shop.entity.SubCategory;
-import com.spanfish.shop.entity.request.subcategory.CreateSubCategoryRequest;
-import com.spanfish.shop.entity.request.subcategory.UpdateSubCategoryRequest;
 import com.spanfish.shop.exception.InvalidArgumentException;
+import com.spanfish.shop.model.entity.Product;
+import com.spanfish.shop.model.entity.SubCategory;
+import com.spanfish.shop.model.request.subcategory.CreateSubCategoryRequest;
+import com.spanfish.shop.model.request.subcategory.UpdateSubCategoryRequest;
 import com.spanfish.shop.service.ProductService;
 import com.spanfish.shop.service.SubcategoryService;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +21,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/subcategories")

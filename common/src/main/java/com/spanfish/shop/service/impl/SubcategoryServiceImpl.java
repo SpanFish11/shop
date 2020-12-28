@@ -1,17 +1,18 @@
 package com.spanfish.shop.service.impl;
 
-import com.spanfish.shop.entity.SubCategory;
-import com.spanfish.shop.entity.request.subcategory.CreateSubCategoryRequest;
-import com.spanfish.shop.entity.request.subcategory.UpdateSubCategoryRequest;
 import com.spanfish.shop.exception.ResourceNotFoundException;
+import com.spanfish.shop.model.entity.SubCategory;
+import com.spanfish.shop.model.request.subcategory.CreateSubCategoryRequest;
+import com.spanfish.shop.model.request.subcategory.UpdateSubCategoryRequest;
 import com.spanfish.shop.repository.SubcategoryRepository;
 import com.spanfish.shop.service.CategoryService;
 import com.spanfish.shop.service.SubcategoryService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -67,6 +68,6 @@ public class SubcategoryServiceImpl implements SubcategoryService {
       throw new ResourceNotFoundException(
           String.format("Could not find any subcategory with the ID %d", id));
     }
-    return subcategoryRepository.existsById(id);
+    return true;
   }
 }

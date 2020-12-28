@@ -1,6 +1,6 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.entity.Order;
+import com.spanfish.shop.model.entity.Order;
 import com.spanfish.shop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,8 +1,9 @@
 package com.spanfish.shop.listener;
 
-import com.spanfish.shop.event.PasswordResetEvent;
+import com.spanfish.shop.model.event.PasswordResetEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
+import org.springframework.lang.NonNull;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
           + "http://localhost:8080/api/v1/accounts/password/forgot/reset-password-verification?token=%s";
 
   @Override
-  public void onApplicationEvent(@SuppressWarnings("NullableProblems") PasswordResetEvent event) {
+  public void onApplicationEvent(@NonNull PasswordResetEvent event) {
     this.makeMessage(event);
   }
 

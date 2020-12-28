@@ -1,14 +1,15 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.entity.Customer;
-import com.spanfish.shop.entity.request.customer.ForgotPasswordRequest;
-import com.spanfish.shop.entity.request.customer.ForgotResetPasswordRequest;
-import com.spanfish.shop.entity.request.customer.RegisterCustomerRequest;
-import com.spanfish.shop.entity.request.customer.TokenRequest;
 import com.spanfish.shop.exception.InvalidArgumentException;
+import com.spanfish.shop.mapper.CustomerMapper;
+import com.spanfish.shop.model.dto.CustomerDTO;
+import com.spanfish.shop.model.entity.Customer;
+import com.spanfish.shop.model.request.customer.ForgotPasswordRequest;
+import com.spanfish.shop.model.request.customer.ForgotResetPasswordRequest;
+import com.spanfish.shop.model.request.customer.RegisterCustomerRequest;
+import com.spanfish.shop.model.request.customer.TokenRequest;
 import com.spanfish.shop.service.CustomerService;
 import com.spanfish.shop.service.TokenService;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/accounts")
@@ -24,9 +27,10 @@ public class AccountController {
 
   private final CustomerService customerService;
   private final TokenService tokenService;
+  private final CustomerMapper customerMapper;
 
   @PostMapping("/registration")
-  public ResponseEntity<Customer> register(
+  public ResponseEntity<CustomerDTO> register(
       @RequestBody RegisterCustomerRequest registerCustomerRequest) {
 
     if (Objects.isNull(registerCustomerRequest)) {
@@ -34,7 +38,7 @@ public class AccountController {
     }
     Customer customer = customerService.save(registerCustomerRequest);
     tokenService.createVerificationEmailToken(customer);
-    return new ResponseEntity<>(customer, HttpStatus.CREATED);
+    return new ResponseEntity<>(customerMapper.toDTO(customer), HttpStatus.CREATED);
   }
 
   @PostMapping("/registration/email-verification")
