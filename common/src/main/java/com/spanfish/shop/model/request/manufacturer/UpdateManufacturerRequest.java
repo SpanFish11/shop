@@ -1,20 +1,16 @@
 package com.spanfish.shop.model.request.manufacturer;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UpdateManufacturerRequest {
+@EqualsAndHashCode(callSuper = true)
+public class UpdateManufacturerRequest extends CreateManufacturerRequest {
 
   @NotNull
   @Min(1)
   private Long id;
-
-  @NotNull
-  private String name;
-
-  @NotNull
-  private String description;
 }

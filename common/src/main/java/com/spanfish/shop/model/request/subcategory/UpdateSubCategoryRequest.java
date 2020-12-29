@@ -1,21 +1,16 @@
 package com.spanfish.shop.model.request.subcategory;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UpdateSubCategoryRequest {
+@EqualsAndHashCode(callSuper = true)
+public class UpdateSubCategoryRequest extends CreateSubCategoryRequest {
 
   @NotNull
   @Min(1)
   private Long id;
-
-  @NotNull
-  @Min(1)
-  private Long categoryId;
-
-  @NotNull
-  private String name;
 }

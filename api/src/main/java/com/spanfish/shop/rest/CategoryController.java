@@ -1,6 +1,5 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.model.entity.Category;
 import com.spanfish.shop.model.entity.Product;
 import com.spanfish.shop.model.request.category.CreateCategoryRequest;
@@ -23,8 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -42,21 +42,14 @@ public class CategoryController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Category> getOne(@PathVariable("id") Long id) {
-
-    if (Objects.isNull(id) || id <= 0) {
-      throw new InvalidArgumentException("Invalid category id");
-    }
+  public ResponseEntity<Category> getOne(@PathVariable("id") @Min(1) @NotNull Long id) {
     return new ResponseEntity<>(categoryService.getById(id), HttpStatus.OK);
   }
 
   @GetMapping("/{id}/products")
   public ResponseEntity<Page<Product>> getCategoryProducts(
-      @PathVariable("id") Long id, Pageable pageable) {
+      @PathVariable("id") @Min(1) @NotNull Long id, Pageable pageable) {
 
-    if (Objects.isNull(id) || id <= 0) {
-      throw new InvalidArgumentException("Invalid category id");
-    }
     return new ResponseEntity<>(
         productService.findAllCategoryProducts(id, pageable), HttpStatus.OK);
   }
@@ -66,29 +59,21 @@ public class CategoryController {
   public ResponseEntity<Category> addNew(
       @RequestBody @Valid CreateCategoryRequest createCategoryRequest) {
 
-    if (Objects.isNull(createCategoryRequest)) {
-      throw new InvalidArgumentException("Wrong data");
-    }
     return new ResponseEntity<>(categoryService.create(createCategoryRequest), HttpStatus.CREATED);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @PutMapping
-  public ResponseEntity<Category> update(@RequestBody UpdateCategoryRequest updateCategoryRequest) {
+  public ResponseEntity<Category> update(
+      @RequestBody @Valid UpdateCategoryRequest updateCategoryRequest) {
 
-    if (Objects.isNull(updateCategoryRequest)) {
-      throw new InvalidArgumentException("Wrong data");
-    }
     return new ResponseEntity<>(categoryService.update(updateCategoryRequest), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @DeleteMapping("{id}")
-  public ResponseEntity<Category> delete(@PathVariable Long id) {
+  public ResponseEntity<Category> delete(@PathVariable("id") @Min(1) @NotNull Long id) {
 
-    if (Objects.isNull(id) || id <= 0) {
-      throw new InvalidArgumentException("Invalid category id");
-    }
     categoryService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

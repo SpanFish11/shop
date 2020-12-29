@@ -1,6 +1,5 @@
 package com.spanfish.shop.rest;
 
-import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.model.entity.Manufacturer;
 import com.spanfish.shop.model.entity.Product;
 import com.spanfish.shop.model.request.manufacturer.CreateManufacturerRequest;
@@ -22,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1/manufacturers")
@@ -45,21 +46,14 @@ public class ManufacturerController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Manufacturer> get(@PathVariable("id") Long id) {
-
-    if (Objects.isNull(id) || id <= 0) {
-      throw new InvalidArgumentException("Invalid manufacturer id");
-    }
+  public ResponseEntity<Manufacturer> get(@PathVariable("id") @Min(1) @NotNull Long id) {
     return new ResponseEntity<>(manufacturerService.findById(id), HttpStatus.OK);
   }
 
   @GetMapping("/{id}/products")
   public ResponseEntity<Page<Product>> getManufacturersProducts(
-      @PathVariable("id") Long id, Pageable pageable) {
+      @PathVariable("id") @Min(1) @NotNull Long id, Pageable pageable) {
 
-    if (Objects.isNull(id) || id <= 0) {
-      throw new InvalidArgumentException("Invalid manufacturer id");
-    }
     return new ResponseEntity<>(
         productService.findAllManufacturersProducts(id, pageable), HttpStatus.OK);
   }
@@ -67,11 +61,8 @@ public class ManufacturerController {
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @PostMapping
   public ResponseEntity<Manufacturer> addNew(
-      @RequestBody CreateManufacturerRequest createManufacturerRequest) {
+      @RequestBody @Valid CreateManufacturerRequest createManufacturerRequest) {
 
-    if (Objects.isNull(createManufacturerRequest)) {
-      throw new InvalidArgumentException("Wrong data");
-    }
     return new ResponseEntity<>(
         manufacturerService.save(createManufacturerRequest), HttpStatus.CREATED);
   }
@@ -79,22 +70,16 @@ public class ManufacturerController {
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @PutMapping
   public ResponseEntity<Manufacturer> update(
-      @RequestBody UpdateManufacturerRequest updateManufacturerRequest) {
+      @RequestBody @Valid UpdateManufacturerRequest updateManufacturerRequest) {
 
-    if (Objects.isNull(updateManufacturerRequest)) {
-      throw new InvalidArgumentException("Wrong data");
-    }
     return new ResponseEntity<>(
         manufacturerService.update(updateManufacturerRequest), HttpStatus.OK);
   }
 
   @Secured({"ROLE_MODERATOR", "ROLE_ADMIN"})
   @DeleteMapping("{id}")
-  public ResponseEntity<Manufacturer> delete(@PathVariable("id") Long id) {
+  public ResponseEntity<Manufacturer> delete(@PathVariable("id") @Min(1) @NotNull Long id) {
 
-    if (Objects.isNull(id) || id <= 0) {
-      throw new InvalidArgumentException("Invalid manufacturer id");
-    }
     manufacturerService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
