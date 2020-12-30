@@ -1,29 +1,32 @@
 package com.spanfish.shop.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import static io.jsonwebtoken.Claims.AUDIENCE;
 import static io.jsonwebtoken.Claims.EXPIRATION;
 import static io.jsonwebtoken.Claims.ID;
 import static io.jsonwebtoken.Claims.ISSUED_AT;
 import static io.jsonwebtoken.Claims.ISSUER;
 import static io.jsonwebtoken.Claims.SUBJECT;
+import static io.jsonwebtoken.Jwts.builder;
+import static io.jsonwebtoken.Jwts.parserBuilder;
+import static io.jsonwebtoken.SignatureAlgorithm.HS512;
+import static io.jsonwebtoken.io.Decoders.BASE64;
+import static io.jsonwebtoken.security.Keys.hmacShaKeyFor;
 import static java.util.Calendar.MILLISECOND;
+import static java.util.Calendar.getInstance;
+import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
+
+import io.jsonwebtoken.Claims;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -32,51 +35,56 @@ public class JwtProvider {
   private static final String ROLES = "roles";
   private static final String TOKEN_PREFIX = "Bearer ";
   private static final String TOKEN_TYPE = "JWT";
-  private static final String TOKEN_ISSUER = "secure-api";
-  private static final String TOKEN_AUDIENCE = "secure-app";
 
   private final JwtConfig jwtConfig;
 
-  public String generateToken(UserDetails userDetails) {
+  public String generateToken(final UserDetails userDetails) {
     Map<String, Object> claims = new HashMap<>();
-    claims.put(ISSUER, TOKEN_ISSUER);
+    claims.put(ISSUER, jwtConfig.getIssuer());
     claims.put(SUBJECT, userDetails.getUsername());
     claims.put(ROLES, getEncryptedRoles(userDetails));
-    claims.put(AUDIENCE, TOKEN_AUDIENCE);
+    claims.put(AUDIENCE, jwtConfig.getAudience());
     claims.put(EXPIRATION, generateExpirationDate());
     claims.put(ISSUED_AT, generateCurrentDate());
-    claims.put(ID, UUID.randomUUID());
-    return TOKEN_PREFIX + generateToken(claims);
+    claims.put(ID, randomUUID());
+    return generateToken(claims);
   }
 
-  private String generateToken(Map<String, Object> claims) {
-    return Jwts.builder()
-        .signWith(
-            Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtConfig.getSecret())),
-            SignatureAlgorithm.HS512)
-        .setHeaderParam("typ", TOKEN_TYPE)
-        .setClaims(claims)
-        .compact();
+  private String generateToken(final Map<String, Object> claims) {
+    return TOKEN_PREFIX
+        + builder()
+            .signWith(hmacShaKeyFor(BASE64.decode(jwtConfig.getSecret())), HS512)
+            .setHeaderParam("typ", TOKEN_TYPE)
+            .setClaims(claims)
+            .compact();
   }
 
-  private Claims getClaimsFromToken(String token) {
-    return Jwts.parserBuilder()
-        .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtConfig.getSecret())))
+  // for retrieving any information from token we will need the secret key
+  private Claims getAllClaimsFromToken(final String token) {
+    return parserBuilder()
+        .setSigningKey(hmacShaKeyFor(BASE64.decode(jwtConfig.getSecret())))
         .build()
         .parseClaimsJws(token)
         .getBody();
   }
 
-  public String getUsernameFromToken(String token) {
-    return getClaimsFromToken(token).getSubject();
+  private <T> T getClaimFromToken(final String token, final Function<Claims, T> claimsResolver) {
+    final Claims claims = getAllClaimsFromToken(token);
+    return claimsResolver.apply(claims);
   }
 
-  public Date getCreatedDateFromToken(String token) {
-    return (Date) getClaimsFromToken(token).get(ISSUED_AT);
+  // retrieve username from jwt token
+  public String getUsernameFromToken(final String token) {
+    return getClaimFromToken(token, Claims::getSubject);
   }
 
-  public Date getExpirationDateFromToken(String token) {
-    return getClaimsFromToken(token).getExpiration();
+  public Date getCreatedDateFromToken(final String token) {
+    return (Date) getAllClaimsFromToken(token).get(ISSUED_AT);
+  }
+
+  // retrieve expiration date from jwt token
+  public Date getExpirationDateFromToken(final String token) {
+    return getClaimFromToken(token, Claims::getExpiration);
   }
 
   private Date generateCurrentDate() {
@@ -84,38 +92,40 @@ public class JwtProvider {
   }
 
   private Date generateExpirationDate() {
-    Calendar calendar = Calendar.getInstance();
+    final Calendar calendar = getInstance();
     calendar.add(MILLISECOND, jwtConfig.getExpiration());
     return calendar.getTime();
   }
 
-  private Boolean isTokenExpired(String token) {
+  // check if the token has expired
+  private Boolean isTokenExpired(final String token) {
     final Date expiration = this.getExpirationDateFromToken(token);
     return expiration.before(this.generateCurrentDate());
   }
 
-  private Boolean isCreatedBeforeLastPasswordReset(Date created, Date lastPasswordReset) {
+  private Boolean isCreatedBeforeLastPasswordReset(
+      final Date created, final Date lastPasswordReset) {
     return (lastPasswordReset != null && created.before(lastPasswordReset));
   }
 
-  private List<String> getEncryptedRoles(UserDetails userDetails) {
+  private List<String> getEncryptedRoles(final UserDetails userDetails) {
     return userDetails.getAuthorities().stream()
         .map(GrantedAuthority::getAuthority)
         .map(s -> s.replace("ROLE_", ""))
         .map(String::toLowerCase)
-        .collect(Collectors.toList());
+        .collect(toList());
   }
 
-  public Boolean canTokenBeRefreshed(String token, Date lastPasswordReset) {
+  public Boolean canTokenBeRefreshed(final String token, final Date lastPasswordReset) {
     final Date created = this.getCreatedDateFromToken(token);
     return !(this.isCreatedBeforeLastPasswordReset(created, lastPasswordReset))
         && !(this.isTokenExpired(token));
   }
 
-  public String refreshToken(String token) {
+  public String refreshToken(final String token) {
     String refreshedToken;
     try {
-      final Claims claims = this.getClaimsFromToken(token);
+      final Claims claims = this.getAllClaimsFromToken(token);
       claims.put(ISSUED_AT, this.generateCurrentDate());
       refreshedToken = this.generateToken(claims);
     } catch (Exception e) {
@@ -124,7 +134,7 @@ public class JwtProvider {
     return refreshedToken;
   }
 
-  public Boolean validateToken(String token, UserDetails userDetails) {
+  public Boolean validateToken(final String token, final UserDetails userDetails) {
     final String username = getUsernameFromToken(token);
     return username.equals(userDetails.getUsername());
   }

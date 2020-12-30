@@ -1,9 +1,6 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.model.entity.Category;
-import com.spanfish.shop.model.request.category.CreateCategoryRequest;
-import com.spanfish.shop.model.request.category.UpdateCategoryRequest;
-
 import java.util.List;
 
 public interface CategoryService {
@@ -12,9 +9,9 @@ public interface CategoryService {
 
   List<Category> getAll();
 
-  Category create(CreateCategoryRequest createCategoryRequest);
+  Category create(Category category);
 
-  Category update(UpdateCategoryRequest updateCategoryRequest);
+  Category update(Category category);
 
   void delete(Long categoryId);
 

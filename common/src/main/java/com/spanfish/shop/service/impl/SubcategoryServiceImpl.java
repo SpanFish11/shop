@@ -1,36 +1,34 @@
 package com.spanfish.shop.service.impl;
 
+import static java.lang.String.format;
+
 import com.spanfish.shop.exception.ResourceNotFoundException;
 import com.spanfish.shop.model.entity.SubCategory;
-import com.spanfish.shop.model.request.subcategory.CreateSubCategoryRequest;
-import com.spanfish.shop.model.request.subcategory.UpdateSubCategoryRequest;
 import com.spanfish.shop.repository.SubcategoryRepository;
-import com.spanfish.shop.service.CategoryService;
 import com.spanfish.shop.service.SubcategoryService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @CacheConfig(cacheNames = "subCategory")
 public class SubcategoryServiceImpl implements SubcategoryService {
 
+  private static final String EXCEPTION_MESSAGE = "Could not find any subcategory with the ID %d";
+
   private final SubcategoryRepository subcategoryRepository;
-  private final CategoryService categoryService;
 
   @Override
-  @Cacheable(key = "{#root.methodName, #id}")
-  public SubCategory getById(Long id) {
+  @Cacheable(key = "#id")
+  public SubCategory getById(final Long id) {
     return subcategoryRepository
         .findById(id)
-        .orElseThrow(
-            () ->
-                new ResourceNotFoundException(
-                    String.format("Could not find any subcategory with the ID %d", id)));
+        .orElseThrow(() -> new ResourceNotFoundException(format(EXCEPTION_MESSAGE, id)));
   }
 
   @Override
@@ -40,33 +38,28 @@ public class SubcategoryServiceImpl implements SubcategoryService {
   }
 
   @Override
-  public SubCategory create(CreateSubCategoryRequest request) {
-    SubCategory subCategory = new SubCategory();
-    subCategory.setName(request.getName());
-    subCategory.setCategory(categoryService.getById(request.getCategoryId()));
+  public SubCategory create(final SubCategory subCategory) {
     return subcategoryRepository.save(subCategory);
   }
 
   @Override
-  public SubCategory update(UpdateSubCategoryRequest request) {
-    SubCategory subCategory = getById(request.getId());
-    subCategory.setName(request.getName());
-    subCategory.setCategory(categoryService.getById(request.getCategoryId()));
+  @CachePut(key = "#subCategory.id")
+  public SubCategory update(final SubCategory subCategory) {
     return subcategoryRepository.save(subCategory);
   }
 
   @Override
-  public void delete(Long id) {
+  @CacheEvict(key = "#id", allEntries = true)
+  public void delete(final Long id) {
     if (existsById(id)) {
       subcategoryRepository.deleteById(id);
     }
   }
 
   @Override
-  public Boolean existsById(Long id) {
+  public Boolean existsById(final Long id) {
     if (!subcategoryRepository.existsById(id)) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any subcategory with the ID %d", id));
+      throw new ResourceNotFoundException(format(EXCEPTION_MESSAGE, id));
     }
     return true;
   }

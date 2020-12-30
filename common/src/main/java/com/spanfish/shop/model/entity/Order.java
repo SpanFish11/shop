@@ -1,31 +1,33 @@
 package com.spanfish.shop.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.TemporalType.TIMESTAMP;
 
-import javax.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.io.Serial;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static javax.persistence.TemporalType.TIMESTAMP;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
@@ -36,10 +38,10 @@ import static javax.persistence.TemporalType.TIMESTAMP;
 @Table(name = "m_orders")
 public class Order implements Serializable {
 
-  private static final long serialVersionUID = -5927255191402153227L;
+  @Serial private static final long serialVersionUID = -5927255191402153227L;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = IDENTITY)
   @Column(name = "id")
   private Long id;
 
@@ -47,11 +49,10 @@ public class Order implements Serializable {
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
-  @OneToMany(
-      mappedBy = "order",
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY,
-      orphanRemoval = true)
+  @Column(name = "number")
+  private String orderNumber;
+
+  @OneToMany(mappedBy = "order", cascade = ALL, fetch = LAZY, orphanRemoval = true)
   @JsonManagedReference
   private List<OrderProduct> orderProductList = new ArrayList<>();
 
@@ -62,9 +63,7 @@ public class Order implements Serializable {
   @Column(name = "total_price")
   private BigDecimal totalPrice;
 
-  @Column(name = "delivery_included")
-  private Boolean deliveryIncluded;
-
-  @Column(name = "confirmed")
-  private Boolean confirmed = false;
+  @Column(name = "status")
+  @Enumerated(STRING)
+  private OrderStatus status;
 }

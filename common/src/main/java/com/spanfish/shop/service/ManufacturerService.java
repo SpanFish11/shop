@@ -1,9 +1,6 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.model.entity.Manufacturer;
-import com.spanfish.shop.model.request.manufacturer.CreateManufacturerRequest;
-import com.spanfish.shop.model.request.manufacturer.UpdateManufacturerRequest;
-
 import java.util.List;
 
 public interface ManufacturerService {
@@ -12,9 +9,9 @@ public interface ManufacturerService {
 
   Manufacturer findById(Long id);
 
-  Manufacturer save(CreateManufacturerRequest createManufacturerRequest);
+  Manufacturer create(Manufacturer manufacturer);
 
-  Manufacturer update(UpdateManufacturerRequest updateManufacturerRequest);
+  Manufacturer update(Manufacturer manufacturer);
 
   void delete(Long manufacturerId);
 

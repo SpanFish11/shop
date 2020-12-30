@@ -1,5 +1,7 @@
 package com.spanfish.shop.security.controller;
 
+import static org.springframework.http.ResponseEntity.ok;
+
 import com.spanfish.shop.security.jwt.JwtProvider;
 import com.spanfish.shop.security.models.AuthRequest;
 import com.spanfish.shop.security.models.AuthResponse;
@@ -25,17 +27,16 @@ public class JwtController {
   private final JwtProvider jwtProvider;
 
   @PostMapping
-  public ResponseEntity<AuthResponse> authentication(@RequestBody AuthRequest authRequest)
-      throws Exception {
+  public ResponseEntity<AuthResponse> authentication(@RequestBody final AuthRequest authRequest) {
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
               authRequest.getEmail(), authRequest.getPassword()));
     } catch (BadCredentialsException e) {
-      throw new Exception("Incorrect email or password", e);
+      throw new BadCredentialsException("Incorrect email or password", e);
     }
-    UserDetails customer = customerDetailsService.loadUserByUsername(authRequest.getEmail());
-    String jwtToken = jwtProvider.generateToken(customer);
-    return ResponseEntity.ok(AuthResponse.builder().token(jwtToken).build());
+    final UserDetails customer = customerDetailsService.loadUserByUsername(authRequest.getEmail());
+    final String jwtToken = jwtProvider.generateToken(customer);
+    return ok(AuthResponse.builder().token(jwtToken).build());
   }
 }

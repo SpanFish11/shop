@@ -1,20 +1,22 @@
 package com.spanfish.shop.exception;
 
+import java.io.Serial;
+
 public class InvalidArgumentException extends RuntimeException {
 
-  private static final long serialVersionUID = -6914564528778643413L;
+  @Serial private static final long serialVersionUID = -6914564528778643413L;
 
   public InvalidArgumentException() {}
 
-  public InvalidArgumentException(String message) {
+  public InvalidArgumentException(final String message) {
     super(message);
   }
 
-  public InvalidArgumentException(String message, Throwable cause) {
+  public InvalidArgumentException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public InvalidArgumentException(Throwable cause) {
+  public InvalidArgumentException(final Throwable cause) {
     super(cause);
   }
 }

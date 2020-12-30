@@ -4,14 +4,11 @@ spring:
   datasource:
     hikari:
       maximum-pool-size: 10
-    url: jdbc:postgresql://localhost:5432/shop?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-    platform:
+    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/shop?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:postgres}
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
-    show-sql: true
+    show-sql: false
   flyway:
     enabled: true
     url: ${spring.datasource.url}
@@ -21,12 +18,57 @@ spring:
     baseline-on-migrate: true
     baseline-description: <<Flyway Scripts>>
     ignore-missing-migrations: true
+  mail:
+    host: ${MAIL_HOST}
+    host_address: ${HOST_ADDRESS}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: 465
+  jackson:
+    date-format: dd.MM.yyyy hh:mm:ss
+server:
+  port: ${PORT:8080}
+# Actuator settings
+management:
+  health:
+    defaults:
+      enabled: true
+    ping:
+      enabled: true
+  endpoint:
+    health:
+      show-details: always
+
+---
+
+security:
+  auth:
+    whitelist: >
+      /,
+      /v3/api-docs,
+      /swagger-ui.html,
+      /swagger-ui/**,
+      /swagger-resources/**,
+      /static/**,
+      /templates/**,
+      /swagger-resources/**
 
 ---
 
 jwt:
   token:
-    secret: SQ/+NvSW0UT6TA8P4qhM7u97fzo6HfxFHN5P3BqPEyuod33MS3IHw/F9ZFqu27pyaNvaMAUYz0eBE1unBP90Vg==
+    secret: ${TOKEN_SECRET:SQ/+NvSW0UT6TA8P4qhM7u97fzo6HfxFHN5P3BqPEyuod33MS3IHw/F9ZFqu27pyaNvaMAUYz0eBE1unBP90Vg==}
     expiration: 864_000_000
+    issuer: ${TOKEN_ISSUER:secure-api}
+    audience: ${TOKEN_AUDIENCE:secure-app}
 
 ---
+
+amazon:
+  s3:
+    images:
+      accessKeyId: ${AWS_ACCES_KEY}
+      secretAccessKey: ${AWS_SECRET_KEY}
+      bucketName: ${AWS_BUCKET_NAME}
+      region: ${AWS_REGION}
+      productFolder: ${PRODUCT_FOLDER}

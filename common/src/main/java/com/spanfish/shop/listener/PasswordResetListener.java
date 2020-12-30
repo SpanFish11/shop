@@ -1,7 +1,10 @@
 package com.spanfish.shop.listener;
 
+import static java.lang.String.format;
+
 import com.spanfish.shop.model.event.PasswordResetEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.lang.NonNull;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,21 +17,25 @@ public class PasswordResetListener implements ApplicationListener<PasswordResetE
 
   private final JavaMailSender javaMailSender;
 
+  @Value("${spring.mail.host_address}")
+  private static String hostAddress;
+
   private static final String SUBJECT = "Password Reset Confirmation";
   private static final String TEXT =
       "Hello, %s!,\nFollow the link to complete the registration: "
-          + "http://localhost:8080/api/v1/accounts/password/forgot/reset-password-verification?token=%s";
+          + hostAddress
+          + "/password/forgot/reset-password-verification?token=%s";
 
   @Override
-  public void onApplicationEvent(@NonNull PasswordResetEvent event) {
+  public void onApplicationEvent(@NonNull final PasswordResetEvent event) {
     this.makeMessage(event);
   }
 
-  private void makeMessage(PasswordResetEvent event) {
-    SimpleMailMessage message = new SimpleMailMessage();
+  private void makeMessage(final PasswordResetEvent event) {
+    final SimpleMailMessage message = new SimpleMailMessage();
     message.setSubject(SUBJECT);
     message.setTo(event.getCustomer().getEmail());
-    message.setText(String.format(TEXT, event.getCustomer().getName(), event.getToken()));
+    message.setText(format(TEXT, event.getCustomer().getName(), event.getToken()));
     javaMailSender.send(message);
   }
 }

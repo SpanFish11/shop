@@ -1,22 +1,43 @@
 package com.spanfish.shop.service.impl;
 
-import com.google.gson.Gson;
+import static com.spanfish.shop.specification.ProductSpec.maxPrice;
+import static com.spanfish.shop.specification.ProductSpec.minPrice;
+import static com.spanfish.shop.specification.ProductSpec.withCategory;
+import static com.spanfish.shop.specification.ProductSpec.withManufacturer;
+import static com.spanfish.shop.specification.ProductSpec.withSubCategory;
+import static java.lang.String.format;
+import static java.math.BigDecimal.valueOf;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+import static org.springframework.data.domain.PageRequest.of;
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.data.domain.Sort.by;
+import static org.springframework.data.jpa.domain.Specification.where;
+
+import com.spanfish.shop.exception.InvalidArgumentException;
 import com.spanfish.shop.exception.ResourceNotFoundException;
+import com.spanfish.shop.model.entity.Category;
+import com.spanfish.shop.model.entity.Manufacturer;
 import com.spanfish.shop.model.entity.Product;
-import com.spanfish.shop.model.request.product.CreateProductRequest;
-import com.spanfish.shop.model.request.product.UpdateProductRequest;
+import com.spanfish.shop.model.entity.SubCategory;
 import com.spanfish.shop.repository.ProductRepository;
-import com.spanfish.shop.repository.SubcategoryRepository;
-import com.spanfish.shop.service.AWSS3Service;
+import com.spanfish.shop.service.AmazonService;
 import com.spanfish.shop.service.CategoryService;
 import com.spanfish.shop.service.ManufacturerService;
 import com.spanfish.shop.service.ProductService;
+import com.spanfish.shop.service.SubcategoryService;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,132 +46,135 @@ import org.springframework.web.multipart.MultipartFile;
 @CacheConfig(cacheNames = "product")
 public class ProductServiceImpl implements ProductService {
 
+  protected static final String DEFAULT_IMAGE_URL =
+      "https://spanfishbucket.s3.eu-central-1.amazonaws.com/products/No_image_available.svg.png";
+  private static final String EXCEPTION_MESSAGE = "Could not find any product with the ID %d";
+  private static final int CODE_SIZE = 7;
+
   private final ProductRepository productRepository;
-  private final SubcategoryRepository subcategoryRepository;
-  private final CategoryService categoryService;
+  private final AmazonService amazonService;
   private final ManufacturerService manufacturerService;
-  private final AWSS3Service awss3Service;
+  private final CategoryService categoryService;
+  private final SubcategoryService subcategoryService;
 
   @Override
-  @Cacheable(key = "{#root.methodName, #id}")
-  public Product findById(Long id) {
+  @Cacheable(key = "#id")
+  public Product findById(final Long id) {
     return productRepository
         .findById(id)
-        .orElseThrow(
-            () ->
-                new ResourceNotFoundException(
-                    String.format("Could not find any product with the ID %d", id)));
+        .orElseThrow(() -> new ResourceNotFoundException(format(EXCEPTION_MESSAGE, id)));
   }
 
   @Override
-  @Cacheable(key = "#root.methodName", unless = "#result.size()== 0")
-  public Page<Product> findAll(Pageable pageable) {
-    return productRepository.findAll(pageable);
-  }
-
-  @Override
-  public Page<Product> findAllManufacturersProducts(Long manufacturerId, Pageable pageable) {
-    Page<Product> products =
-        productRepository.findProductsByManufacturer_Id(manufacturerId, pageable);
-    if (products.getTotalElements() == 0) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any products for manufacturer ID %d", manufacturerId));
+  @Cacheable(keyGenerator = "customKeyGenerator", unless = "#result.totalElements == 0")
+  public Page<Product> findAll(
+      final Integer page,
+      final Integer pageSize,
+      final String sort,
+      final Long manufacturerId,
+      final Long categoryId,
+      final Long subcategoryId,
+      final Double minPrice,
+      final Double maxPrice) {
+    PageRequest pageRequest;
+    if (nonNull(sort) && !sort.isBlank()) {
+      final Sort sortRequest = getSort(sort);
+      if (isNull(sortRequest)) {
+        throw new InvalidArgumentException("Invalid sort parameter");
+      }
+      pageRequest = of(page, pageSize, sortRequest);
+    } else {
+      pageRequest = of(page, pageSize);
     }
-    return products;
+
+    final Specification<Product> specifications =
+        where(
+            minPrice(valueOf(minPrice))
+                .and(maxPrice(valueOf(maxPrice)))
+                .and(withManufacturer(manufacturerId))
+                .and(withCategory(categoryId))
+                .and(withSubCategory(subcategoryId)));
+
+    return productRepository.findAll(specifications, pageRequest);
   }
 
   @Override
-  public Page<Product> findAllCategoryProducts(Long categoryId, Pageable pageable) {
-    Page<Product> products = productRepository.findProductsByCategory_Id(categoryId, pageable);
-    if (products.getTotalElements() == 0) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any products for category ID %d", categoryId));
-    }
-    return products;
+  @Cacheable(keyGenerator = "customKeyGenerator", unless = "#result.totalElements == 0")
+  public Page<Product> search(final String query, final Integer page, final Integer pageSize) {
+    return productRepository.findByNameContainsIgnoreCase(query, of(page, pageSize));
   }
 
   @Override
-  public Page<Product> findAllSubCategoryProducts(Long subCategoryId, Pageable pageable) {
-    Page<Product> products =
-        productRepository.findProductsBySubCategory_Id(subCategoryId, pageable);
-    if (products.getTotalElements() == 0) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any products for subcategory ID %d", subCategoryId));
-    }
-    return products;
+  @Cacheable(keyGenerator = "customKeyGenerator", unless = "#result.totalElements == 0")
+  public Page<Product> findAllManufacturersProducts(
+      final Long manufacturerId, final Integer page, final Integer pageSize) {
+    final Manufacturer manufacturer = manufacturerService.findById(manufacturerId);
+    return productRepository.findProductsByManufacturer(manufacturer, of(page, pageSize));
   }
 
   @Override
-  public Product create(CreateProductRequest request) {
-    Product product = createProduct(request);
+  @Cacheable(keyGenerator = "customKeyGenerator", unless = "#result.totalElements == 0")
+  public Page<Product> findAllCategoryProducts(
+      final Long categoryId, final Integer page, final Integer pageSize) {
+    final Category category = categoryService.getById(categoryId);
+    return productRepository.findProductsByCategory(category, of(page, pageSize));
+  }
+
+  @Override
+  @Cacheable(keyGenerator = "customKeyGenerator", unless = "#result.totalElements == 0")
+  public Page<Product> findAllSubCategoryProducts(
+      final Long subCategoryId, final Integer page, final Integer pageSize) {
+    final SubCategory subCategory = subcategoryService.getById(subCategoryId);
+    return productRepository.findProductsBySubCategory(subCategory, of(page, pageSize));
+  }
+
+  @Override
+  public Product create(final Product product) {
+    final String code = randomNumeric(CODE_SIZE);
+    product.setCode(code);
+    product.setPictureUrl(DEFAULT_IMAGE_URL);
     return productRepository.save(product);
   }
 
   @Override
-  public Product update(UpdateProductRequest request) {
-    Product product = updateProduct(request);
+  @CachePut(key = "#product.id")
+  public Product update(final Product product) {
     return productRepository.save(product);
   }
 
   @Override
-  public Product addProduct(String json, MultipartFile photo) {
-    CreateProductRequest request = new Gson().fromJson(json, CreateProductRequest.class);
-    Product product = createProduct(request);
-    if (!photo.isEmpty()) {
-      product.setPictureUrl(awss3Service.uploadImage(photo));
-    }
+  @CachePut(key = "#id")
+  public Product updateProductPhoto(final Long id, final MultipartFile photo) throws IOException {
+    final byte[] imageBytes = photo.getBytes();
+    final Product product = findById(id);
+    product.setPictureUrl(amazonService.uploadImage(imageBytes, id));
     return productRepository.save(product);
   }
 
   @Override
-  public Product updateProduct(String json, MultipartFile photo) {
-    UpdateProductRequest request = new Gson().fromJson(json, UpdateProductRequest.class);
-    System.out.println(request.getId());
-    Product product = updateProduct(request);
-    if (!photo.isEmpty()) {
-      // TODO
-      // awss3Service.deleteImage(product.getPictureUrl());
-      product.setPictureUrl(awss3Service.uploadImage(photo));
-    }
-    return productRepository.save(product);
-  }
-
-  @Override
-  public void delete(Long productId) {
+  @CacheEvict(key = "#productId", allEntries = true)
+  public void delete(final Long productId) {
     if (existsById(productId)) {
       productRepository.deleteById(productId);
     }
   }
 
   @Override
-  public Boolean existsById(Long id) {
+  public Boolean existsById(final Long id) {
     if (!productRepository.existsById(id)) {
-      throw new ResourceNotFoundException(
-          String.format("Could not find any product with the ID %d", id));
+      throw new ResourceNotFoundException(format(EXCEPTION_MESSAGE, id));
     }
     return true;
   }
 
-  private Product createProduct(CreateProductRequest request) {
-    Product product = new Product();
-    product.setName(request.getName());
-    product.setPrice(request.getPrice());
-    product.setDescription(request.getDescription());
-    product.setCode(RandomStringUtils.randomNumeric(7));
-    product.setManufacturer(manufacturerService.findById(request.getManufacturerId()));
-    product.setCategory(categoryService.getById(request.getCategoryId()));
-    product.setSubCategory(subcategoryRepository.getOne(request.getSubcategoryId()));
-    return product;
-  }
-
-  private Product updateProduct(UpdateProductRequest request) {
-    Product product = findById(request.getId());
-    product.setName(request.getName());
-    product.setPrice(request.getPrice());
-    product.setDescription(request.getDescription());
-    product.setManufacturer(manufacturerService.findById(request.getManufacturerId()));
-    product.setCategory(categoryService.getById(request.getCategoryId()));
-    product.setSubCategory(subcategoryRepository.getOne(request.getSubcategoryId()));
-    return product;
+  private Sort getSort(final String sort) {
+    switch (sort) {
+      case "lowest":
+        return by(ASC);
+      case "highest":
+        return by(DESC);
+      default:
+        return null;
+    }
   }
 }

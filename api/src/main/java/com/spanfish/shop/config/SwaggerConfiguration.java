@@ -1,15 +1,17 @@
 package com.spanfish.shop.config;
 
-import java.util.Collections;
+import static java.util.Collections.singletonList;
+import static springfox.documentation.builders.PathSelectors.any;
+import static springfox.documentation.builders.RequestHandlerSelectors.withClassAnnotation;
+import static springfox.documentation.spi.DocumentationType.OAS_30;
+import static springfox.documentation.spi.service.contexts.SecurityContext.builder;
+
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiKey;
 import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.SecurityReference;
-import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
@@ -17,13 +19,13 @@ public class SwaggerConfiguration {
 
   @Bean
   public Docket api() {
-    return new Docket(DocumentationType.OAS_30)
+    return new Docket(OAS_30)
         .select()
-        .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
-        .paths(PathSelectors.any())
+        .apis(withClassAnnotation(RestController.class))
+        .paths(any())
         .build()
-        .securityContexts(Collections.singletonList(securityContext()))
-        .securitySchemes(Collections.singletonList(apiKey()));
+        .securityContexts(singletonList(securityContext()))
+        .securitySchemes(singletonList(apiKey()));
   }
 
   private ApiKey apiKey() {
@@ -31,13 +33,14 @@ public class SwaggerConfiguration {
   }
 
   private SecurityContext securityContext() {
-    return SecurityContext.builder().securityReferences(defaultAuth()).build();
+    return builder().securityReferences(defaultAuth()).build();
   }
 
   private List<SecurityReference> defaultAuth() {
-    AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-    AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+    final AuthorizationScope authorizationScope =
+        new AuthorizationScope("global", "accessEverything");
+    final AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
     authorizationScopes[0] = authorizationScope;
-    return Collections.singletonList(new SecurityReference("Authorization", authorizationScopes));
+    return singletonList(new SecurityReference("Authorization", authorizationScopes));
   }
 }

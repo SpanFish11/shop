@@ -2,13 +2,16 @@ package com.spanfish.shop.service;
 
 import com.spanfish.shop.model.entity.Order;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
 
-  Page<Order> findAllCustomerOrders(Pageable pageable);
+  Integer getAllOrdersCount();
 
-  Page<Order> findAllOrders(Pageable pageable);
+  Page<Order> findAllCustomerOrders(Integer page, Integer pageSize);
+
+  Page<Order> findAllOrders(String number, Integer page, Integer pageSize);
 
   Order saveOrder();
+
+  void changeOrderStatus(String code, Integer status);
 }

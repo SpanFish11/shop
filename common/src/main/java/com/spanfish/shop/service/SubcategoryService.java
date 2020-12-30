@@ -1,9 +1,6 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.model.entity.SubCategory;
-import com.spanfish.shop.model.request.subcategory.CreateSubCategoryRequest;
-import com.spanfish.shop.model.request.subcategory.UpdateSubCategoryRequest;
-
 import java.util.List;
 
 public interface SubcategoryService {
@@ -12,9 +9,9 @@ public interface SubcategoryService {
 
   List<SubCategory> getAll();
 
-  SubCategory create(CreateSubCategoryRequest createSubCategoryRequest);
+  SubCategory create(SubCategory subCategory);
 
-  SubCategory update(UpdateSubCategoryRequest updateSubCategoryRequest);
+  SubCategory update(SubCategory subCategory);
 
   void delete(Long id);
 

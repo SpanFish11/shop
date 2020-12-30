@@ -11,4 +11,6 @@ public class JwtConfig {
 
   private String secret;
   private Integer expiration;
+  private String issuer;
+  private String audience;
 }

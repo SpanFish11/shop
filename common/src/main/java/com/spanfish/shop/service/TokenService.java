@@ -1,7 +1,7 @@
 package com.spanfish.shop.service;
 
+import com.spanfish.shop.model.ResetPassword;
 import com.spanfish.shop.model.entity.Customer;
-import com.spanfish.shop.model.request.customer.ForgotResetPasswordRequest;
 
 public interface TokenService {
 
@@ -13,5 +13,5 @@ public interface TokenService {
 
   void validatePasswordResetToken(String token);
 
-  void passwordReset(ForgotResetPasswordRequest forgotResetPasswordRequest);
+  void passwordReset(ResetPassword resetPassword);
 }

@@ -1,31 +1,30 @@
 package com.spanfish.shop;
 
-import com.spanfish.shop.config.AWSS3Config;
+import static org.springframework.boot.SpringApplication.run;
+
+import com.spanfish.shop.config.AmazonConfig;
 import com.spanfish.shop.config.ApplicationBeans;
 import com.spanfish.shop.config.CachingConfiguration;
-import com.spanfish.shop.config.MailSenderConfiguration;
+import com.spanfish.shop.config.MailConfiguration;
 import com.spanfish.shop.config.SwaggerConfiguration;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
 
-@SpringBootApplication(
-    scanBasePackages = "com.spanfish",
-    exclude = {SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class})
+@SpringBootApplication(scanBasePackages = "com.spanfish")
 @EnableCaching
 @Import({
   ApplicationBeans.class,
   CachingConfiguration.class,
   SwaggerConfiguration.class,
-  MailSenderConfiguration.class,
-  AWSS3Config.class
+  MailConfiguration.class,
+  AmazonConfig.class
 })
+@RequiredArgsConstructor
 public class ShopApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(ShopApplication.class, args);
+    run(ShopApplication.class, args);
   }
 }

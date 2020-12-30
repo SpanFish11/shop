@@ -1,31 +1,37 @@
 package com.spanfish.shop.service;
 
 import com.spanfish.shop.model.entity.Product;
-import com.spanfish.shop.model.request.product.CreateProductRequest;
-import com.spanfish.shop.model.request.product.UpdateProductRequest;
+import java.io.IOException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
   Product findById(Long productId);
 
-  Page<Product> findAll(Pageable pageable);
+  Page<Product> findAll(
+      Integer page,
+      Integer pageSize,
+      String sort,
+      Long manufacturerId,
+      Long categoryId,
+      Long subcategoryId,
+      Double minPrice,
+      Double maxPrice);
 
-  Page<Product> findAllManufacturersProducts(Long manufacturerId, Pageable pageable);
+  Page<Product> search(String query, Integer page, Integer pageSize);
 
-  Page<Product> findAllCategoryProducts(Long categoryId, Pageable pageable);
+  Page<Product> findAllManufacturersProducts(Long manufacturerId, Integer page, Integer pageSize);
 
-  Page<Product> findAllSubCategoryProducts(Long subCategoryId, Pageable pageable);
+  Page<Product> findAllCategoryProducts(Long categoryId, Integer page, Integer pageSize);
 
-  Product create(CreateProductRequest createProductRequest);
+  Page<Product> findAllSubCategoryProducts(Long subCategoryId, Integer page, Integer pageSize);
 
-  Product update(UpdateProductRequest updateProductRequest);
+  Product create(Product product);
 
-  Product addProduct(String json, MultipartFile photo);
+  Product update(Product product);
 
-  Product updateProduct(String json, MultipartFile photo);
+  Product updateProductPhoto(Long id, MultipartFile photo) throws IOException;
 
   void delete(Long productId);
 
